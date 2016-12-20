@@ -91,80 +91,11 @@ var initMap = function() {
     // Constructor creates a new map - only center and zoom are required.
     map = new google.maps.Map(document.getElementById('map'), {
         center: start_place,
-        zoom: 12,
+        zoom: 10,
         // styles: map_styles,
         mapTypeControl: false
     });
     ViewModel.init();
-}
-
-
-
-
-
-function initMapMarkers() {
-    "use strict";
-
-    var largeInfowindow = new google.maps.InfoWindow();
-
-    // Style the markers a bit. This will be our listing marker icon.
-    const defaultIcon = makeMarkerIcon('0091ff');
-
-    // Create a "highlighted location" marker color for when the user
-    // mouses over the marker.
-    const highlightedIcon = makeMarkerIcon('FFFF24');
-
-    // Get the count of number of locations
-    const numLocations = locations.length;
-
-    // The following group uses the location array to create an array of markers on initialize.
-    for (var i = 0; i < numLocations; i++) {
-        // Get the position from the location array.
-        const locationObj = locations[i];
-        const position = locationObj.location;
-        const title = locationObj.title;
-
-        // Create a marker per location, and put into markers array.
-        var marker = new google.maps.Marker({
-            map: map,
-            position: position,
-            title: title,
-            animation: google.maps.Animation.DROP,
-            icon: defaultIcon,
-            id: i
-        });
-        // Push the marker to our array of markers.
-        markers.push(marker);
-
-        // Create an onclick event to open the large infowindow at each marker.
-        marker.addListener('click', function() {
-            // populateInfoWindow(this, largeInfowindow);
-        });
-        // Two event listeners - one for mouseover, one for mouseout,
-        // to change the colors back and forth.
-        marker.addListener('mouseover', function() {
-            this.setIcon(highlightedIcon);
-        });
-        marker.addListener('mouseout', function() {
-            this.setIcon(defaultIcon);
-        });
-    }
-
-    // Initialize the drawing manager.
-    /*
-     var drawingManager = new google.maps.drawing.DrawingManager({
-         drawingMode: google.maps.drawing.OverlayType.POLYGON,
-         drawingControl: true,
-         drawingControlOptions: {
-             position: google.maps.ControlPosition.TOP_LEFT,
-             drawingModes: [
-                google.maps.drawing.OverlayType.POLYGON
-             ]
-         }
-     });
-     */
-
-    displayMarkers();
 }
 
 // This function takes in a COLOR, and then creates a new marker
@@ -181,22 +112,6 @@ function makeMarkerIcon(markerColor) {
     return markerImage;
 }
 
-// This function will loop through the markers array and display them all.
-function displayMarkers() {
-    var bounds = new google.maps.LatLngBounds();
-    // Extend the boundaries of the map for each marker and display the marker
-    for (var i = 0; i < markers.length; i++) {
-        markers[i].setMap(map);
-        bounds.extend(markers[i].position);
-    }
-    map.fitBounds(bounds);
-}
-
-// Function called when there is an error in loading google maps
-function mapApiLoadError() {
-    "use strict";
-    console.log("Map Load Error! Please refresh the page.")
-}
 
 var locationModel = {
     self: this,
@@ -210,11 +125,76 @@ var locationModel = {
         {title: 'Chinatown Homey Space', location: {lat: 40.7180628, lng: -73.9961237}}
     ],
 
+    setBoundaries: function() {
+        "use strict";
+        let bounds = new google.maps.LatLngBounds();
+
+        if (markers && markers.length > 0) {
+            const numMarkers = markers.length;
+            // Extend the boundaries of the map for each marker and display the marker
+            for (let i = 0; i < numMarkers; i++) {
+                markers[i].setMap(map);
+                bounds.extend(markers[i].position);
+            }
+            map.fitBounds(bounds);
+        }
+    },
+
+    //creates a marker for each location.
+    initMarkers: function () {
+
+        // Style the markers a bit. This will be our listing marker icon.
+        const defaultIcon = makeMarkerIcon('0091ff');
+
+        // Create a "highlighted location" marker color for when the user
+        // mouses over the marker.
+        const highlightedIcon = makeMarkerIcon('FFFF24');
+
+
+        if (this.all_locations && this.all_locations.length > 0) {
+            // Get the count of number of locations
+            const numLocations = this.all_locations.length;
+
+            for (var i = 0; i < numLocations; i++) {
+                const locationObj = this.all_locations[i];
+                const position = locationObj.location;
+                const title = locationObj.title;
+
+                // Create a marker per location, and put into markers array.
+                var marker = new google.maps.Marker({
+                    map: map,
+                    position: position,
+                    title: title,
+                    animation: google.maps.Animation.DROP,
+                    draggable: false,
+                    icon: defaultIcon,
+                    id: i
+                });
+                // Push the marker to our array of markers.
+                markers.push(marker);
+
+                // Create an onclick event to open the large infowindow at each marker.
+                marker.addListener('click', function() {
+                    // populateInfoWindow(this, largeInfowindow);
+                });
+                // Two event listeners - one for mouseover, one for mouseout,
+                // to change the colors back and forth.
+                marker.addListener('mouseover', function() {
+                    this.setIcon(highlightedIcon);
+                });
+                marker.addListener('mouseout', function() {
+                    this.setIcon(defaultIcon);
+                });
+            }
+
+            this.setBoundaries();
+        }
+
+    },
+
     init: function() {
         "use strict";
-        // These are the real estate listings that will be shown to the user.
-        // Normally we'd have these in a database instead.
-
+        this.initMarkers();
     }
 
 }
@@ -249,5 +229,7 @@ var ViewModel = {
         // Activating Knockout.js
         ko.applyBindings(ViewModel);
     }
+
+
 };
 
