@@ -2,21 +2,26 @@
 // Global variables
 let map,
     placeInfoWindow,
-    map_styles;
+    map_styles = [],
+    locations = [],
+    markers = [];
 
-// Create a new blank array for all the listing markers.
-var markers = [];
+const start_place = {lat: 40.7413549, lng: -73.9980244};
+
 
 // This function will be called on successful load of Google Maps API
 function mapApiLoadSuccess() {
+
+    // Get the places array
+    loadAllPlaces();
 
     // Create a styles array to use with the map.
     initMapStyles();
 
     // Constructor creates a new map - only center and zoom are required.
     map = new google.maps.Map(document.getElementById('map'), {
-        center: {lat: 40.7413549, lng: -73.9980244},
-        zoom: 13,
+        center: start_place,
+        zoom: 12,
         // styles: map_styles,
         mapTypeControl: false
     });
@@ -26,79 +31,82 @@ function mapApiLoadSuccess() {
 
 function initMapStyles() {
     "use strict";
-    map_styles = [
-        {
-            featureType: 'water',
-            stylers: [
-                { color: '#04a7d8' }
-            ]
-        },{
-            featureType: 'administrative',
-            elementType: 'labels.text.stroke',
-            stylers: [
-                { color: '#ffffff' },
-                { weight: 6 }
-            ]
-        },{
-            featureType: 'administrative',
-            elementType: 'labels.text.fill',
-            stylers: [
-                { color: '#e85113' }
-            ]
-        },{
-            featureType: 'road.highway',
-            elementType: 'geometry.stroke',
-            stylers: [
-                { color: '#efe9e4' },
-                { lightness: -40 }
-            ]
-        },{
-            featureType: 'transit.station',
-            stylers: [
-                { weight: 9 },
-                { hue: '#e85113' }
-            ]
-        },{
-            featureType: 'road.highway',
-            elementType: 'labels.icon',
-            stylers: [
-                { visibility: 'off' }
-            ]
-        },{
-            featureType: 'water',
-            elementType: 'labels.text.stroke',
-            stylers: [
-                { lightness: 100 }
-            ]
-        },{
-            featureType: 'water',
-            elementType: 'labels.text.fill',
-            stylers: [
-                { lightness: -100 }
-            ]
-        },{
-            featureType: 'poi',
-            elementType: 'geometry',
-            stylers: [
-                { visibility: 'on' },
-                { color: '#f0e4d3' }
-            ]
-        },{
-            featureType: 'road.highway',
-            elementType: 'geometry.fill',
-            stylers: [
-                { color: '#efe9e4' },
-                { lightness: -25 }
-            ]
-        }
-    ];
+    map_styles = [{
+        featureType: 'water',
+        stylers: [{
+            color: '#04a7d8'
+        }]
+    }, {
+        featureType: 'administrative',
+        elementType: 'labels.text.stroke',
+        stylers: [{
+            color: '#ffffff'
+        }, {
+            weight: 6
+        }]
+    }, {
+        featureType: 'administrative',
+        elementType: 'labels.text.fill',
+        stylers: [{
+            color: '#e85113'
+        }]
+    }, {
+        featureType: 'road.highway',
+        elementType: 'geometry.stroke',
+        stylers: [{
+            color: '#efe9e4'
+        }, {
+            lightness: -40
+        }]
+    }, {
+        featureType: 'transit.station',
+        stylers: [{
+            weight: 9
+        }, {
+            hue: '#e85113'
+        }]
+    }, {
+        featureType: 'road.highway',
+        elementType: 'labels.icon',
+        stylers: [{
+            visibility: 'off'
+        }]
+    }, {
+        featureType: 'water',
+        elementType: 'labels.text.stroke',
+        stylers: [{
+            lightness: 100
+        }]
+    }, {
+        featureType: 'water',
+        elementType: 'labels.text.fill',
+        stylers: [{
+            lightness: -100
+        }]
+    }, {
+        featureType: 'poi',
+        elementType: 'geometry',
+        stylers: [{
+            visibility: 'on'
+        }, {
+            color: '#f0e4d3'
+        }]
+    }, {
+        featureType: 'road.highway',
+        elementType: 'geometry.fill',
+        stylers: [{
+            color: '#efe9e4'
+        }, {
+            lightness: -25
+        }]
+    }];
 }
 
-function initMapMarkers() {
+function loadAllPlaces() {
     "use strict";
     // These are the real estate listings that will be shown to the user.
     // Normally we'd have these in a database instead.
-    var locations = [
+    locations = [
         {title: 'Park Ave Penthouse', location: {lat: 40.7713024, lng: -73.9632393}},
         {title: 'Chelsea Loft', location: {lat: 40.7444883, lng: -73.9949465}},
         {title: 'Union Square Open Floor Plan', location: {lat: 40.7347062, lng: -73.9895759}},
@@ -106,35 +114,28 @@ function initMapMarkers() {
         {title: 'TriBeCa Artsy Bachelor Pad', location: {lat: 40.7195264, lng: -74.0089934}},
         {title: 'Chinatown Homey Space', location: {lat: 40.7180628, lng: -73.9961237}}
     ];
+}
 
-    var largeInfowindow = new google.maps.InfoWindow();
-
-    // Initialize the drawing manager.
-    /*
-        var drawingManager = new google.maps.drawing.DrawingManager({
-        drawingMode: google.maps.drawing.OverlayType.POLYGON,
-        drawingControl: true,
-        drawingControlOptions: {
-            position: google.maps.ControlPosition.TOP_LEFT,
-            drawingModes: [
-                google.maps.drawing.OverlayType.POLYGON
-            ]
-        }
-    });
-    */
+function initMapMarkers() {
+    "use strict";
 
     // Style the markers a bit. This will be our listing marker icon.
-    var defaultIcon = makeMarkerIcon('0091ff');
+    const defaultIcon = makeMarkerIcon('0091ff');
 
     // Create a "highlighted location" marker color for when the user
     // mouses over the marker.
-    var highlightedIcon = makeMarkerIcon('FFFF24');
+    const highlightedIcon = makeMarkerIcon('FFFF24');
+
+    // Get the count of number of locations
+    const numLocations = locations.length;
 
     // The following group uses the location array to create an array of markers on initialize.
-    for (var i = 0; i < locations.length; i++) {
+    for (var i = 0; i < numLocations; i++) {
         // Get the position from the location array.
-        var position = locations[i].location;
-        var title = locations[i].title;
+        const locationObj = locations[i];
+        const position = locationObj.location;
+        const title = locationObj.title;
+
         // Create a marker per location, and put into markers array.
         var marker = new google.maps.Marker({
             position: position,
@@ -145,9 +146,11 @@ function initMapMarkers() {
         });
         // Push the marker to our array of markers.
         markers.push(marker);
+
+
         // Create an onclick event to open the large infowindow at each marker.
         marker.addListener('click', function() {
-            populateInfoWindow(this, largeInfowindow);
+            // populateInfoWindow(this, largeInfowindow);
         });
         // Two event listeners - one for mouseover, one for mouseout,
         // to change the colors back and forth.
@@ -158,6 +161,22 @@ function initMapMarkers() {
             this.setIcon(defaultIcon);
         });
     }
+
+    // var largeInfowindow = new google.maps.InfoWindow();
+
+    // Initialize the drawing manager.
+    /*
+     var drawingManager = new google.maps.drawing.DrawingManager({
+         drawingMode: google.maps.drawing.OverlayType.POLYGON,
+         drawingControl: true,
+         drawingControlOptions: {
+             position: google.maps.ControlPosition.TOP_LEFT,
+             drawingModes: [
+                google.maps.drawing.OverlayType.POLYGON
+             ]
+         }
+     });
+     */
 
     showListings();
 }
