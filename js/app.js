@@ -3,33 +3,13 @@
 let map,
     placeInfoWindow,
     map_styles = [],
-    locations = [],
+    alllocations = [],
     markers = [];
 
 const start_place = {lat: 40.7413549, lng: -73.9980244};
 
 
-// This function will be called on successful load of Google Maps API
-function mapApiLoadSuccess() {
-
-    // Get the places array
-    loadAllPlaces();
-
-    // Create a styles array to use with the map.
-    initMapStyles();
-
-    // Constructor creates a new map - only center and zoom are required.
-    map = new google.maps.Map(document.getElementById('map'), {
-        center: start_place,
-        zoom: 12,
-        // styles: map_styles,
-        mapTypeControl: false
-    });
-
-    initMapMarkers();
-}
-
-function initMapStyles() {
+var initMapStyles = function() {
     "use strict";
     map_styles = [{
         featureType: 'water',
@@ -102,22 +82,30 @@ function initMapStyles() {
     }];
 }
 
-function loadAllPlaces() {
-    "use strict";
-    // These are the real estate listings that will be shown to the user.
-    // Normally we'd have these in a database instead.
-    locations = [
-        {title: 'Park Ave Penthouse', location: {lat: 40.7713024, lng: -73.9632393}},
-        {title: 'Chelsea Loft', location: {lat: 40.7444883, lng: -73.9949465}},
-        {title: 'Union Square Open Floor Plan', location: {lat: 40.7347062, lng: -73.9895759}},
-        {title: 'East Village Hip Studio', location: {lat: 40.7281777, lng: -73.984377}},
-        {title: 'TriBeCa Artsy Bachelor Pad', location: {lat: 40.7195264, lng: -74.0089934}},
-        {title: 'Chinatown Homey Space', location: {lat: 40.7180628, lng: -73.9961237}}
-    ];
+// This function will be called on successful load of Google Maps API
+var initMap = function() {
+
+    // Apply styles array to use with the map.
+    initMapStyles();
+
+    // Constructor creates a new map - only center and zoom are required.
+    map = new google.maps.Map(document.getElementById('map'), {
+        center: start_place,
+        zoom: 12,
+        // styles: map_styles,
+        mapTypeControl: false
+    });
+    ViewModel.init();
 }
+
+
+
+
 
 function initMapMarkers() {
     "use strict";
+
+    var largeInfowindow = new google.maps.InfoWindow();
 
     // Style the markers a bit. This will be our listing marker icon.
     const defaultIcon = makeMarkerIcon('0091ff');
@@ -138,6 +126,7 @@ function initMapMarkers() {
 
         // Create a marker per location, and put into markers array.
         var marker = new google.maps.Marker({
+            map: map,
             position: position,
             title: title,
             animation: google.maps.Animation.DROP,
@@ -146,7 +135,6 @@ function initMapMarkers() {
         });
         // Push the marker to our array of markers.
         markers.push(marker);
-
 
         // Create an onclick event to open the large infowindow at each marker.
         marker.addListener('click', function() {
@@ -162,8 +150,6 @@ function initMapMarkers() {
         });
     }
 
-    // var largeInfowindow = new google.maps.InfoWindow();
-
     // Initialize the drawing manager.
     /*
      var drawingManager = new google.maps.drawing.DrawingManager({
@@ -178,7 +164,7 @@ function initMapMarkers() {
      });
      */
 
-    showListings();
+    displayMarkers();
 }
 
 // This function takes in a COLOR, and then creates a new marker
@@ -196,7 +182,7 @@ function makeMarkerIcon(markerColor) {
 }
 
 // This function will loop through the markers array and display them all.
-function showListings() {
+function displayMarkers() {
     var bounds = new google.maps.LatLngBounds();
     // Extend the boundaries of the map for each marker and display the marker
     for (var i = 0; i < markers.length; i++) {
@@ -212,13 +198,56 @@ function mapApiLoadError() {
     console.log("Map Load Error! Please refresh the page.")
 }
 
-var ViewModel = function () {
-    "use strict";
+var locationModel = {
+    self: this,
 
-    // Setting the Application Title
-    this.appTitle = ko.observable("Neighborhood Insights");
+    all_locations: [
+        {title: 'Park Ave Penthouse', location: {lat: 40.7713024, lng: -73.9632393}},
+        {title: 'Chelsea Loft', location: {lat: 40.7444883, lng: -73.9949465}},
+        {title: 'Union Square Open Floor Plan', location: {lat: 40.7347062, lng: -73.9895759}},
+        {title: 'East Village Hip Studio', location: {lat: 40.7281777, lng: -73.984377}},
+        {title: 'TriBeCa Artsy Bachelor Pad', location: {lat: 40.7195264, lng: -74.0089934}},
+        {title: 'Chinatown Homey Space', location: {lat: 40.7180628, lng: -73.9961237}}
+    ],
 
+    init: function() {
+        "use strict";
+        // These are the real estate listings that will be shown to the user.
+        // Normally we'd have these in a database instead.
+
+    }
+
+}
+
+var ViewModel = {
+
+    self: this,
+
+    // variable used to display Application Title
+    appTitle: ko.observable("Neighborhood Insights"),
+
+    locations: ko.observableArray(),
+    currentLocation: ko.observable(),
+
+    // variable used for search/filter functionality
+    searchStr: ko.observable(''),
+
+    // Get the locations details from the locationModel
+    numLocations: locationModel.all_locations.length,
+
+    getLocations: function () {
+        for (var i = 0; i < this.numLocations; i++) {
+            this.locations.push(locationModel.all_locations[i]);
+        }
+    },
+
+    init: function () {
+        "use strict";
+        locationModel.init();
+        this.getLocations();
+
+        // Activating Knockout.js
+        ko.applyBindings(ViewModel);
+    }
 };
 
-// Activating Knockout.js
-ko.applyBindings(new ViewModel());
