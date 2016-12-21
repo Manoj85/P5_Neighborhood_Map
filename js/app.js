@@ -1,118 +1,152 @@
 
 // Global variables
 let map,
-    placeInfoWindow,
-    map_styles = [],
     alllocations = [],
-    markers = [];
+    markers = [],
+    infowindow,
+    bounds;
 
-const start_place = {lat: 40.7413549, lng: -73.9980244};
+// Set the initial point for the map
+const start_point = {lat: 40.7413549, lng: -73.9980244};
 
+// Create Map Options
+const mapOptions = {
 
-var initMapStyles = function() {
-    "use strict";
-    map_styles = [{
-        featureType: 'water',
-        stylers: [{
-            color: '#04a7d8'
-        }]
-    }, {
-        featureType: 'administrative',
-        elementType: 'labels.text.stroke',
-        stylers: [{
-            color: '#ffffff'
-        }, {
-            weight: 6
-        }]
-    }, {
-        featureType: 'administrative',
-        elementType: 'labels.text.fill',
-        stylers: [{
-            color: '#e85113'
-        }]
-    }, {
-        featureType: 'road.highway',
-        elementType: 'geometry.stroke',
-        stylers: [{
-            color: '#efe9e4'
-        }, {
-            lightness: -40
-        }]
-    }, {
-        featureType: 'transit.station',
-        stylers: [{
-            weight: 9
-        }, {
-            hue: '#e85113'
-        }]
-    }, {
-        featureType: 'road.highway',
-        elementType: 'labels.icon',
-        stylers: [{
-            visibility: 'off'
-        }]
-    }, {
-        featureType: 'water',
-        elementType: 'labels.text.stroke',
-        stylers: [{
-            lightness: 100
-        }]
-    }, {
-        featureType: 'water',
-        elementType: 'labels.text.fill',
-        stylers: [{
-            lightness: -100
-        }]
-    }, {
-        featureType: 'poi',
-        elementType: 'geometry',
-        stylers: [{
-            visibility: 'on'
-        }, {
-            color: '#f0e4d3'
-        }]
-    }, {
-        featureType: 'road.highway',
-        elementType: 'geometry.fill',
-        stylers: [{
-            color: '#efe9e4'
-        }, {
-            lightness: -25
-        }]
-    }];
+    "center": start_point,
+    zoom: 13,
+    styles: [
+        {
+            featureType: 'water',
+            stylers: [
+                {
+                    color: '#04a7d8'
+                }
+            ]
+        },
+        {
+            featureType: 'administrative',
+            elementType: 'labels.text.stroke',
+            stylers: [
+                {
+                    color: '#ffffff'
+                },
+                {
+                    weight: 6
+                }
+            ]
+        },
+        {
+            featureType: 'administrative',
+            elementType: 'labels.text.fill',
+            stylers: [
+                {
+                    color: '#e85113'
+                }
+            ]
+        },
+        {
+            featureType: 'road.highway',
+            elementType: 'geometry.stroke',
+            stylers: [
+                {
+                    color: '#efe9e4'
+                },
+                {
+                    lightness: -40
+                }
+            ]
+        },
+        {
+            featureType: 'transit.station',
+            stylers: [
+                {
+                    weight: 9
+                },
+                {
+                    hue: '#e85113'
+                }
+            ]
+        },
+        {
+            featureType: 'road.highway',
+            elementType: 'labels.icon',
+            stylers: [
+                {
+                    visibility: 'off'
+                }
+            ]
+        },
+        {
+            featureType: 'water',
+            elementType: 'labels.text.stroke',
+            stylers: [
+                {
+                    lightness: 100
+                }
+            ]
+        },
+        {
+            featureType: 'water',
+            elementType: 'labels.text.fill',
+            stylers: [
+                {
+                    lightness: -100
+                }
+            ]
+        },
+        {
+            featureType: 'poi',
+            elementType: 'geometry',
+            stylers: [
+                {
+                    visibility: 'on'
+                },
+                {
+                    color: '#f0e4d3'
+                }
+            ]
+        },
+        {
+            featureType: 'road.highway',
+            elementType: 'geometry.fill',
+            stylers: [
+                {
+                    color: '#efe9e4'
+                },
+                {
+                    lightness: -25
+                }
+            ]
+        }
+    ]
 }
 
 // This function will be called on successful load of Google Maps API
 var initMap = function() {
 
-    // Apply styles array to use with the map.
-    initMapStyles();
+    // Creates a new map
+    map = new google.maps.Map(document.getElementById('map'), mapOptions);
 
-    // Constructor creates a new map - only center and zoom are required.
-    map = new google.maps.Map(document.getElementById('map'), {
-        center: start_place,
-        zoom: 10,
-        // styles: map_styles,
-        mapTypeControl: false
+    // Close infowindow when clicked elsewhere on the map
+    map.addListener("click", function(){
+        infowindow.close(infowindow);
     });
-    ViewModel.init();
-}
 
-// This function takes in a COLOR, and then creates a new marker
-// icon of that color. The icon will be 21 px wide by 34 high, have an origin
-// of 0, 0 and be anchored at 10, 34).
-function makeMarkerIcon(markerColor) {
-    var markerImage = new google.maps.MarkerImage(
-        'http://chart.googleapis.com/chart?chst=d_map_spin&chld=1.15|0|'+ markerColor +
-        '|40|_|%E2%80%A2',
-        new google.maps.Size(21, 34),
-        new google.maps.Point(0, 0),
-        new google.maps.Point(10, 34),
-        new google.maps.Size(21,34));
-    return markerImage;
+    // Define InfoWindow
+    infowindow = new google.maps.InfoWindow({
+        maxWidth: 150,
+        content: ""
+    });
+
+    // Define bounds
+    bounds = new google.maps.LatLngBounds();
+
+    // Initialize ViewModel
+    viewModel.init();
 }
 
 
+// Model for the location
 var locationModel = {
     self: this,
 
@@ -127,8 +161,6 @@ var locationModel = {
 
     setBoundaries: function() {
         "use strict";
-        let bounds = new google.maps.LatLngBounds();
-
         if (markers && markers.length > 0) {
             const numMarkers = markers.length;
             // Extend the boundaries of the map for each marker and display the marker
@@ -140,15 +172,27 @@ var locationModel = {
         }
     },
 
+    // Creates a new marker icon with provided color.
+    setMarkerIcon: function(color) {
+        const markerIcon = new google.maps.MarkerImage(
+            'http://chart.googleapis.com/chart?chst=d_map_spin&chld=1.15|0|'+ color +
+            '|40|_|%E2%80%A2',
+            new google.maps.Size(21, 34),
+            new google.maps.Point(0, 0),
+            new google.maps.Point(10, 34),
+            new google.maps.Size(21,34));
+        return markerIcon;
+    },
+
     //creates a marker for each location.
     initMarkers: function () {
 
         // Style the markers a bit. This will be our listing marker icon.
-        const defaultIcon = makeMarkerIcon('0091ff');
+        const defaultIcon = this.setMarkerIcon('0091ff');
 
         // Create a "highlighted location" marker color for when the user
         // mouses over the marker.
-        const highlightedIcon = makeMarkerIcon('FFFF24');
+        const highlightedIcon = this.setMarkerIcon('FFFF24');
 
 
         if (this.all_locations && this.all_locations.length > 0) {
@@ -156,12 +200,12 @@ var locationModel = {
             const numLocations = this.all_locations.length;
 
             for (var i = 0; i < numLocations; i++) {
-                const locationObj = this.all_locations[i];
+                let locationObj = this.all_locations[i];
                 const position = locationObj.location;
                 const title = locationObj.title;
 
                 // Create a marker per location, and put into markers array.
-                var marker = new google.maps.Marker({
+                let marker = new google.maps.Marker({
                     map: map,
                     position: position,
                     title: title,
@@ -170,12 +214,12 @@ var locationModel = {
                     icon: defaultIcon,
                     id: i
                 });
-                // Push the marker to our array of markers.
+
                 markers.push(marker);
 
                 // Create an onclick event to open the large infowindow at each marker.
                 marker.addListener('click', function() {
-                    // populateInfoWindow(this, largeInfowindow);
+                    infowindow.open(map, marker);
                 });
                 // Two event listeners - one for mouseover, one for mouseout,
                 // to change the colors back and forth.
@@ -185,6 +229,8 @@ var locationModel = {
                 marker.addListener('mouseout', function() {
                     this.setIcon(defaultIcon);
                 });
+
+                locationObj.marker = marker;
             }
 
             this.setBoundaries();
@@ -199,7 +245,7 @@ var locationModel = {
 
 }
 
-var ViewModel = {
+var viewModel = {
 
     self: this,
 
@@ -227,7 +273,7 @@ var ViewModel = {
         this.getLocations();
 
         // Activating Knockout.js
-        ko.applyBindings(ViewModel);
+        ko.applyBindings(viewModel);
     }
 
 
