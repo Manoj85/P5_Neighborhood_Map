@@ -11,7 +11,7 @@ const start_point = {lat: 40.7413549, lng: -73.9980244};
 
 // Create Map Options
 const mapOptions = {
-    "center": start_point,
+    // "center": start_point,
     "zoom": 12,
     "disableDefaultUI": true
 }
@@ -20,7 +20,6 @@ const mapErrorMessage = '<h3>Problem retrieving Map Data. Please reload the page
 
 // This function will be called on successful load of Google Maps API
 var initMap = function() {
-
 
     if(typeof google === 'undefined') {
         $("#map-error").html(mapErrorMessage);
@@ -51,11 +50,6 @@ var initMap = function() {
 // Model for the location
 var locationModel = {
     self: this,
-
-    FOURSQUARE_BASE_URL: 'https://api.foursquare.com/v2/venues/search?ll=',
-    FOURSQUARE_CLIENT_ID: "&client_id=EGYSP4IIH5HNYQADAGR1EB5VOLKE41UXIQJDTJRJ0RW4QWQY",
-    FOURSQUARE_SECRET: "&client_secret=ZAV2UOVVIBJ5HWV2IZ4CTBP4Z1AFTSL3FKVOEY44VLH1PZZY",
-    FOURSQUARE_VERSION: "&v=20161221",
 
     all_locations: [
         {title: 'Park Ave Penthouse', location: {lat: 40.7713024, lng: -73.9632393}},
@@ -147,40 +141,9 @@ var locationModel = {
 
     },
 
-    getData: function () {
-        "use strict";
-        if (this.all_locations && this.all_locations.length > 0) {
-            const numLocations = this.all_locations.length;
-
-            for (var i = 0; i < numLocations; i++) {
-                let locationObj = this.all_locations[i];
-                const position = locationObj.location;
-                const title = locationObj.title;
-
-
-                const FS_URL = this.FOURSQUARE_BASE_URL + position.lat + ',' + position.lng + this.FOURSQUARE_CLIENT_ID + this.FOURSQUARE_SECRET + this.FOURSQUARE_VERSION;
-
-                console.log(FS_URL);
-
-                $.get({
-                    type: "GET",
-                    url: FS_URL,
-                    dataType: "JSONP",
-                    cache: false,
-                    success: function (data) {
-                        console.log(data);
-                    }
-                });
-
-            }
-        }
-
-    },
-
     init: function() {
         "use strict";
         this.initMarkers();
-        this.getData();
     }
 
 }
@@ -189,28 +152,44 @@ var viewModel = {
 
     self: this,
 
+    FOURSQUARE_BASE_URL: 'https://api.foursquare.com/v2/venues/search?ll=',
+    FOURSQUARE_CLIENT_ID: "&client_id=EGYSP4IIH5HNYQADAGR1EB5VOLKE41UXIQJDTJRJ0RW4QWQY",
+    FOURSQUARE_SECRET: "&client_secret=ZAV2UOVVIBJ5HWV2IZ4CTBP4Z1AFTSL3FKVOEY44VLH1PZZY",
+    FOURSQUARE_VERSION: "&v=20161221",
+
     // variable used to display Application Title
     appTitle: ko.observable("Neighborhood Insights"),
 
-    locations: ko.observableArray(),
+    locations: ko.observableArray([]),
     currentLocation: ko.observable(),
 
     // variable used for search/filter functionality
     searchStr: ko.observable(''),
 
     // Get the locations details from the locationModel
-    numLocations: locationModel.all_locations.length,
+    getData: function () {
+        "use strict";
 
-    getLocations: function () {
-        for (var i = 0; i < this.numLocations; i++) {
-            this.locations.push(locationModel.all_locations[i]);
-        }
+        const FS_URL = this.FOURSQUARE_BASE_URL + start_point.lat + ',' + start_point.lng + this.FOURSQUARE_CLIENT_ID + this.FOURSQUARE_SECRET + this.FOURSQUARE_VERSION;
+
+        console.log(FS_URL);
+
+        $.ajax({
+            type: "GET",
+            url: FS_URL,
+            dataType: "JSONP",
+            cache: false,
+            success: function (data) {
+                console.log(data.response.venues.length);
+                console.log(this.locations);
+            }
+        });
     },
 
     init: function () {
         "use strict";
         locationModel.init();
-        this.getLocations();
+        this.getData();
 
         // Activating Knockout.js
         ko.applyBindings(viewModel);
