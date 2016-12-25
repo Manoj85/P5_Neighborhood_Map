@@ -11,126 +11,28 @@ const start_point = {lat: 40.7413549, lng: -73.9980244};
 
 // Create Map Options
 const mapOptions = {
-
     "center": start_point,
-    zoom: 13,
-    styles: [
-        {
-            featureType: 'water',
-            stylers: [
-                {
-                    color: '#04a7d8'
-                }
-            ]
-        },
-        {
-            featureType: 'administrative',
-            elementType: 'labels.text.stroke',
-            stylers: [
-                {
-                    color: '#ffffff'
-                },
-                {
-                    weight: 6
-                }
-            ]
-        },
-        {
-            featureType: 'administrative',
-            elementType: 'labels.text.fill',
-            stylers: [
-                {
-                    color: '#e85113'
-                }
-            ]
-        },
-        {
-            featureType: 'road.highway',
-            elementType: 'geometry.stroke',
-            stylers: [
-                {
-                    color: '#efe9e4'
-                },
-                {
-                    lightness: -40
-                }
-            ]
-        },
-        {
-            featureType: 'transit.station',
-            stylers: [
-                {
-                    weight: 9
-                },
-                {
-                    hue: '#e85113'
-                }
-            ]
-        },
-        {
-            featureType: 'road.highway',
-            elementType: 'labels.icon',
-            stylers: [
-                {
-                    visibility: 'off'
-                }
-            ]
-        },
-        {
-            featureType: 'water',
-            elementType: 'labels.text.stroke',
-            stylers: [
-                {
-                    lightness: 100
-                }
-            ]
-        },
-        {
-            featureType: 'water',
-            elementType: 'labels.text.fill',
-            stylers: [
-                {
-                    lightness: -100
-                }
-            ]
-        },
-        {
-            featureType: 'poi',
-            elementType: 'geometry',
-            stylers: [
-                {
-                    visibility: 'on'
-                },
-                {
-                    color: '#f0e4d3'
-                }
-            ]
-        },
-        {
-            featureType: 'road.highway',
-            elementType: 'geometry.fill',
-            stylers: [
-                {
-                    color: '#efe9e4'
-                },
-                {
-                    lightness: -25
-                }
-            ]
-        }
-    ]
+    "zoom": 12,
+    "disableDefaultUI": true
 }
+
+const mapErrorMessage = '<h3>Problem retrieving Map Data. Please reload the page to retry!</h3>'
 
 // This function will be called on successful load of Google Maps API
 var initMap = function() {
 
-    // Creates a new map
-    map = new google.maps.Map(document.getElementById('map'), mapOptions);
 
-    // Close infowindow when clicked elsewhere on the map
-    map.addListener("click", function(){
-        infowindow.close(infowindow);
-    });
+    if(typeof google === 'undefined') {
+        $("#map-error").html(mapErrorMessage);
+        return;
+    } else {
+        map = new google.maps.Map(document.getElementById('map'), mapOptions);
+
+        // Close infowindow when clicked elsewhere on the map
+        map.addListener("click", function(){
+            infowindow.close(infowindow);
+        });
+    }
 
     // Define InfoWindow
     infowindow = new google.maps.InfoWindow({
@@ -149,6 +51,11 @@ var initMap = function() {
 // Model for the location
 var locationModel = {
     self: this,
+
+    FOURSQUARE_BASE_URL: 'https://api.foursquare.com/v2/venues/search?ll=',
+    FOURSQUARE_CLIENT_ID: "&client_id=EGYSP4IIH5HNYQADAGR1EB5VOLKE41UXIQJDTJRJ0RW4QWQY",
+    FOURSQUARE_SECRET: "&client_secret=ZAV2UOVVIBJ5HWV2IZ4CTBP4Z1AFTSL3FKVOEY44VLH1PZZY",
+    FOURSQUARE_VERSION: "&v=20161221",
 
     all_locations: [
         {title: 'Park Ave Penthouse', location: {lat: 40.7713024, lng: -73.9632393}},
@@ -174,6 +81,7 @@ var locationModel = {
 
     // Creates a new marker icon with provided color.
     setMarkerIcon: function(color) {
+        "use strict";
         const markerIcon = new google.maps.MarkerImage(
             'http://chart.googleapis.com/chart?chst=d_map_spin&chld=1.15|0|'+ color +
             '|40|_|%E2%80%A2',
@@ -186,6 +94,7 @@ var locationModel = {
 
     //creates a marker for each location.
     initMarkers: function () {
+        "use strict";
 
         // Style the markers a bit. This will be our listing marker icon.
         const defaultIcon = this.setMarkerIcon('0091ff');
@@ -238,9 +147,40 @@ var locationModel = {
 
     },
 
+    getData: function () {
+        "use strict";
+        if (this.all_locations && this.all_locations.length > 0) {
+            const numLocations = this.all_locations.length;
+
+            for (var i = 0; i < numLocations; i++) {
+                let locationObj = this.all_locations[i];
+                const position = locationObj.location;
+                const title = locationObj.title;
+
+
+                const FS_URL = this.FOURSQUARE_BASE_URL + position.lat + ',' + position.lng + this.FOURSQUARE_CLIENT_ID + this.FOURSQUARE_SECRET + this.FOURSQUARE_VERSION;
+
+                console.log(FS_URL);
+
+                $.get({
+                    type: "GET",
+                    url: FS_URL,
+                    dataType: "JSONP",
+                    cache: false,
+                    success: function (data) {
+                        console.log(data);
+                    }
+                });
+
+            }
+        }
+
+    },
+
     init: function() {
         "use strict";
         this.initMarkers();
+        this.getData();
     }
 
 }
