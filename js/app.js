@@ -1,64 +1,22 @@
 
 // Global variables
 let map,
-    alllocations = [],
     markers = [],
     infowindow,
     bounds;
 
 // Set the initial point for the map
 const start_point = {lat: 40.7413549, lng: -73.9980244};
-
-// Create Map Options
-const mapOptions = {
-    // "center": start_point,
-    "zoom": 12,
-    "disableDefaultUI": true
-}
-
 const mapErrorMessage = '<h3>Problem retrieving Map Data. Please reload the page to retry!</h3>'
 
-// This function will be called on successful load of Google Maps API
-var initMap = function() {
 
-    if(typeof google === 'undefined') {
-        $("#map-error").html(mapErrorMessage);
-        return;
-    } else {
-        map = new google.maps.Map(document.getElementById('map'), mapOptions);
+// Model for the Venue
+let venue = function(fs_data, fs_id) {
 
-        // Close infowindow when clicked elsewhere on the map
-        map.addListener("click", function(){
-            infowindow.close(infowindow);
-        });
-    }
-
-    // Define InfoWindow
-    infowindow = new google.maps.InfoWindow({
-        maxWidth: 150,
-        content: ""
-    });
-
-    // Define bounds
-    bounds = new google.maps.LatLngBounds();
-
-    // Initialize ViewModel
-    viewModel.init();
 }
 
-
-// Model for the location
-var locationModel = {
+var placeModel = {
     self: this,
-
-    all_locations: [
-        {title: 'Park Ave Penthouse', location: {lat: 40.7713024, lng: -73.9632393}},
-        {title: 'Chelsea Loft', location: {lat: 40.7444883, lng: -73.9949465}},
-        {title: 'Union Square Open Floor Plan', location: {lat: 40.7347062, lng: -73.9895759}},
-        {title: 'East Village Hip Studio', location: {lat: 40.7281777, lng: -73.984377}},
-        {title: 'TriBeCa Artsy Bachelor Pad', location: {lat: 40.7195264, lng: -74.0089934}},
-        {title: 'Chinatown Homey Space', location: {lat: 40.7180628, lng: -73.9961237}}
-    ],
 
     setBoundaries: function() {
         "use strict";
@@ -139,38 +97,58 @@ var locationModel = {
             this.setBoundaries();
         }
 
-    },
-
-    init: function() {
-        "use strict";
-        this.initMarkers();
     }
 
 }
 
-var viewModel = {
+/*
+ * Neighborhood Map View Model.
+ */
+var ViewModel = function() {
 
-    self: this,
+    var self = this;
 
-    FOURSQUARE_BASE_URL: 'https://api.foursquare.com/v2/venues/search?ll=',
-    FOURSQUARE_CLIENT_ID: "&client_id=EGYSP4IIH5HNYQADAGR1EB5VOLKE41UXIQJDTJRJ0RW4QWQY",
-    FOURSQUARE_SECRET: "&client_secret=ZAV2UOVVIBJ5HWV2IZ4CTBP4Z1AFTSL3FKVOEY44VLH1PZZY",
-    FOURSQUARE_VERSION: "&v=20161221",
+    const FOURSQUARE_BASE_URL = 'https://api.foursquare.com/v2/venues/search?ll=';
+    const FOURSQUARE_CLIENT_ID = "&client_id=EGYSP4IIH5HNYQADAGR1EB5VOLKE41UXIQJDTJRJ0RW4QWQY";
+    const FOURSQUARE_SECRET = "&client_secret=ZAV2UOVVIBJ5HWV2IZ4CTBP4Z1AFTSL3FKVOEY44VLH1PZZY";
+    const FOURSQUARE_VERSION = "&v=20161221&venuePhotos=1";
 
     // variable used to display Application Title
-    appTitle: ko.observable("Neighborhood Insights"),
+    self.appTitle = ko.observable("Neighborhood Insights");
 
-    locations: ko.observableArray([]),
-    currentLocation: ko.observable(),
+    let venues = ko.observableArray([]),
+        selectedVenue = ko.observable(''),
+        venueMarkers = [],
+        totalVenues = 0,
+        searchStr = ko.observable('') // variable used for search/filter functionality
+    ;
 
-    // variable used for search/filter functionality
-    searchStr: ko.observable(''),
+    function createMarker(venue) {
 
-    // Get the locations details from the locationModel
-    getData: function () {
+        const venue_position = new google.maps.LatLng(venue.location.lat, venue.location.lng);
+
+        let marker = new google.maps.Marker({
+            map: map,
+            position: venue_position,
+            title: venue.name,
+            animation: google.maps.Animation.DROP,
+            draggable: false,
+            // icon: defaultIcon,
+            id: venue.id
+        });
+
+        marker.addListener('click', function() {
+            infowindow.open(map, marker);
+        });
+
+        venue.marker = marker;
+
+    }
+
+    // Get the places details using the FourSquare API
+    function getData() {
         "use strict";
-
-        const FS_URL = this.FOURSQUARE_BASE_URL + start_point.lat + ',' + start_point.lng + this.FOURSQUARE_CLIENT_ID + this.FOURSQUARE_SECRET + this.FOURSQUARE_VERSION;
+        const FS_URL = FOURSQUARE_BASE_URL + start_point.lat + ',' + start_point.lng + FOURSQUARE_CLIENT_ID + FOURSQUARE_SECRET + FOURSQUARE_VERSION;
 
         console.log(FS_URL);
 
@@ -181,20 +159,64 @@ var viewModel = {
             cache: false,
             success: function (data) {
                 console.log(data.response.venues.length);
-                console.log(this.locations);
+                this.venues = data.response.venues;
+                console.log(this.venues);
+
+                this.totalVenues = this.venues.length;
+                if (this.totalVenues > 0) {
+                    for(let i=0; i < this.totalVenues; i++) {
+                        const venueObj = this.venues[i];
+                        console.log( venueObj );
+                        createMarker(venueObj);
+                    }
+                } else {
+                    alert("No venues found for this location!!");
+                }
             }
         });
-    },
-
-    init: function () {
-        "use strict";
-        locationModel.init();
-        this.getData();
-
-        // Activating Knockout.js
-        ko.applyBindings(viewModel);
     }
 
+    // This function will be called on successful load of Google Maps API
+    function initMap() {
 
-};
+        console.log("initMap");
+        // Create Map Options
+        const mapOptions = {
+            "center": start_point,
+            zoom: 12,
+            disableDefaultUI: true
+        }
+
+        if(typeof google === 'undefined') {
+            $("#map-error").html(mapErrorMessage);
+            return;
+        } else {
+            map = new google.maps.Map(document.getElementById('map'), mapOptions);
+
+            // Define InfoWindow
+            infowindow = new google.maps.InfoWindow({
+                maxWidth: 150,
+                content: ""
+            });
+
+            // Close infowindow when clicked elsewhere on the map
+            map.addListener("click", function(){
+                infowindow.close(infowindow);
+            });
+
+            // Define bounds
+            bounds = new google.maps.LatLngBounds();
+            map.fitBounds(bounds);
+        }
+
+        // Initialize getData using FourSquare API
+        getData();
+    }
+
+    initMap();
+}
+
+$(function() {
+    ko.applyBindings(new ViewModel());
+});
 
