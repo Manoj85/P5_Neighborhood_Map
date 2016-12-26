@@ -20,24 +20,6 @@ let Venue = function(fs_data, fs_id) {
     // this.venueCategoryShortName = fs_data.categories[0].shortName;
 }
 
-var placeModel = {
-    self: this,
-
-    // Creates a new marker icon with provided color.
-    setMarkerIcon: function(color) {
-        "use strict";
-        const markerIcon = new google.maps.MarkerImage(
-            'http://chart.googleapis.com/chart?chst=d_map_spin&chld=1.15|0|'+ color +
-            '|40|_|%E2%80%A2',
-            new google.maps.Size(21, 34),
-            new google.maps.Point(0, 0),
-            new google.maps.Point(10, 34),
-            new google.maps.Size(21,34));
-        return markerIcon;
-    }   
-
-}
-
 /*
  * Neighborhood Map View Model.
  */
@@ -60,10 +42,21 @@ var ViewModel = function() {
     self.appTitle = ko.observable("Neighborhood Insights");
     self.venues = ko.observableArray([]);
 
-    function doFilterVenues(venue) {
-        console.log('doFilterVenues');
-        const venueFilterTxt = filteredVenue().toLowerCase();
+    // Creates a custom marker icon with provided color.
+    self.createCustomMarkerIcon = function(color) {
+        "use strict";
+        const markerIcon = new google.maps.MarkerImage(
+            'http://chart.googleapis.com/chart?chst=d_map_spin&chld=1.15|0|'+ color +
+            '|40|_|%E2%80%A2',
+            new google.maps.Size(21, 34),
+            new google.maps.Point(0, 0),
+            new google.maps.Point(10, 34),
+            new google.maps.Size(21,34));
+        return markerIcon;
+    }   
 
+    function doFilterVenues(venue) {
+        const venueFilterTxt = filteredVenue().toLowerCase();
         self.venues().forEach(function (vitem) {
             const vname = vitem.venueName();
             if ( vname.toLowerCase().search(venueFilterTxt) === -1 ){
@@ -77,8 +70,6 @@ var ViewModel = function() {
     }
 
     function createMarker(venue) {
-        console.log('createMarker');
-
         const venue_position = new google.maps.LatLng(venue.lat, venue.lng);
         var marker = new google.maps.Marker({
             map: map,
@@ -112,27 +103,20 @@ var ViewModel = function() {
         bounds.extend(marker.position);
 
         //map.fitBounds(bounds);
-
         venue.marker = marker;
-
     }
 
     // Get the places details using the FourSquare API
     function getData(start_point) {
         "use strict";
         const FS_URL = FOURSQUARE_BASE_URL + start_point.lat + ',' + start_point.lng + FOURSQUARE_CLIENT_ID + FOURSQUARE_SECRET + FOURSQUARE_VERSION;
-
-        console.log(FS_URL);
-
         $.ajax({
             type: "GET",
             url: FS_URL,
             dataType: "JSONP",
             cache: false,
             success: function (data) {
-                console.log(data.response.venues.length);
                 this.totalVenues = data.response.venues.length;
-
                 if (this.totalVenues > 0) {
                     for(let i = 0; i < 10; i++) {
                         var item = data.response.venues[i];
@@ -149,10 +133,7 @@ var ViewModel = function() {
     }
 
     function getVenues(location) {
-        console.log("getVenues");
-        console.log(location);
         infowindow = new google.maps.InfoWindow();
-
         // Get Nearby venues from this location
         getData(location);
     }
@@ -165,9 +146,7 @@ var ViewModel = function() {
 
 function initMap() {
     console.log("initMap");
-
     const mapErrorMessage = '<h3>Problem retrieving Map Data. Please reload the page to retry!</h3>';
-
     if(typeof google === 'undefined') {
         console.log("google undefined");
         $("#map-error").html(mapErrorMessage);
