@@ -14,19 +14,24 @@ https://manoj85.github.io/P5_Neighborhood_Map/
 - [TO-DO] No click functionality from the List of Venues
 
 ##### References
-- http://www.latlong.net/
 - Knockout Documentation [http://knockoutjs.com/documentation/]
-- Google Maps API [https://developers.google.com/maps/documentation/javascript/tutorial]
-- Foursquare API [https://developer.foursquare.com/]
-  https://developer.foursquare.com/overview/auth#userless
-  https://developer.foursquare.com/docs/venues/search
+  - http://todomvc.com/examples/knockoutjs/
+- Google Maps API
+  - https://developers.google.com/maps/documentation/javascript/tutorial
+  - https://developers.google.com/maps/documentation/javascript/styling#creating_a_styledmaptype
+  - https://google-developers.appspot.com/maps/documentation/utils/geocoder/
+- Foursquare API:
+  - https://developer.foursquare.com/
+  - https://developer.foursquare.com/overview/auth#userless
+  - https://developer.foursquare.com/docs/venues/search
 - Udacity JavaScript Design Patterns [https://www.udacity.com/course/ud989]
 - Udacity Google Maps APIs
 - Udacity Intro to AJAX [https://www.udacity.com/course/ud110]
+- Udacity Project 5 Overview Webcast [https://github.com/udacity/fend-office-hours/tree/master/Javascript%20Design%20Patterns/P5%20Project%20Overview]
 - Custom InfoBox for Google Map Markers: 
-  http://stackoverflow.com/questions/15165007/google-maps-custom-infobox
-  http://codepen.io/emgerold/pen/kjivC
-  http://www.geocodezip.com/v3_simpleMap_InfoBoxA.html
+  - http://stackoverflow.com/questions/15165007/google-maps-custom-infobox
+  - http://codepen.io/emgerold/pen/kjivC
+  - http://www.geocodezip.com/v3_simpleMap_InfoBoxA.html
 
 
 
