@@ -66,7 +66,7 @@ var ViewModel = function() {
     function createMarker(venue) {
 
         console.log('createMarker');
-        
+
         const venue_position = new google.maps.LatLng(venue.lat, venue.lng);
         
         var marker = new google.maps.Marker({
@@ -80,7 +80,20 @@ var ViewModel = function() {
 
         
         google.maps.event.addListener(marker, 'click', function() {
-            venue_marker_info_content = 'Venue Name: ' + venue.venueName + '\n';
+            venue_marker_info_content = '<div id="v-info-box">'
+                                        + '<div class="v-name">'
+                                        +  venue.venueName
+                                        + '</div>'
+                                        + '<div class="v-address">'
+                                        +  venue.venueAddress
+                                        + '</div>'
+                                        + '<div class="v-url">'
+                                        + '<a href="' + venue.venueFsUrl + '">' + venue.venueFsUrl + '</a>'
+                                        + '</div>'
+
+
+            ;
+
             infowindow.setContent(venue_marker_info_content);
             infowindow.open(map, marker);
         });
@@ -130,6 +143,7 @@ var ViewModel = function() {
     function getVenues(location) {
         console.log("getVenues");
         console.log(location);
+        infowindow = new google.maps.InfoWindow();
 
         // Get Nearby venues from this location
         getData(location);
@@ -157,11 +171,12 @@ function initMap() {
 
         map = new google.maps.Map(document.getElementById('map'), mapOptions);
         $('#map').height($(window).height());
-
+/*
         infowindow = new google.maps.InfoWindow({
             maxWidth: 150,
             content: ""
         });
+*/
     }
 }
 
