@@ -15,6 +15,7 @@ let Venue = function(fs_data, fs_id) {
     this.lat = fs_data.location.lat;
     this.lng = fs_data.location.lng;
     this.venueFsUrl = "https://foursquare.com/v/" + this.venueID;
+    this.visible = ko.observable(true);
     // this.venueCategoryName = fs_data.categories[0].name;
     // this.venueCategoryShortName = fs_data.categories[0].shortName;
 }
@@ -43,11 +44,9 @@ var placeModel = {
 var ViewModel = function() {
 
     var self = this;
-    var venues = ko.observableArray(),
-        selectedVenue = ko.observable(''),
+    var selectedVenue = ko.observable(''),
         venueMarkers = [],
         totalVenues = 0,
-        searchStr = ko.observable('') // variable used for search/filter functionality
         venue_marker_info_content = ''
         filteredVenue = ko.observable('')
     ;
@@ -59,16 +58,19 @@ var ViewModel = function() {
 
     // variable used to display Application Title
     self.appTitle = ko.observable("Neighborhood Insights");
+    self.venues = ko.observableArray([]);
 
     function doFilterVenues(venue) {
         console.log('doFilterVenues');
         const venueFilterTxt = filteredVenue().toLowerCase();
 
-        venues().forEach(function (vitem) {
+        self.venues().forEach(function (vitem) {
             const vname = vitem.venueName();
             if ( vname.toLowerCase().search(venueFilterTxt) === -1 ){
+                vitem.visible(false);
                 vitem.marker.setVisible(false);
             } else {
+                vitem.visible(true);
                 vitem.marker.setVisible(true);
             }
         });
@@ -134,9 +136,9 @@ var ViewModel = function() {
                 if (this.totalVenues > 0) {
                     for(let i = 0; i < 10; i++) {
                         var item = data.response.venues[i];
-                        venues.push( new Venue(item) );
+                        self.venues.push( new Venue(item) );
                     }
-                    venues().forEach(function(vitem) {
+                    self.venues().forEach(function(vitem) {
                         createMarker(vitem);
                     });
                 } else {
@@ -180,12 +182,6 @@ function initMap() {
 
         map = new google.maps.Map(document.getElementById('map'), mapOptions);
         $('#map').height($(window).height());
-/*
-        infowindow = new google.maps.InfoWindow({
-            maxWidth: 150,
-            content: ""
-        });
-*/
     }
 }
 

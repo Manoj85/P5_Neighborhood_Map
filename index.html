@@ -6,7 +6,7 @@
     <title>Udacity - Neighborhood Map</title>
     <meta http-equiv="content-type" content="text/html; charset=UTF-8">
     <meta name="generator" content="Bootply" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no, minimum-scale=1, maximum-scale=1">
 
     <!--[if lt IE 9]>
     <script src="//html5shim.googlecode.com/svn/trunk/html5.js"></script>
@@ -23,8 +23,6 @@
             <span data-bind="text: appTitle"></span>
         </div>
         <div id="app-filter-icon" class="pull-right">
-            <!-- <i class="fa fa-lg fa-filter fa-border" aria-hidden="true"></i> -->
-
             <form class="form-inline" role="form">
                 <div class="form-group">
                     <div class="input-group">
@@ -32,8 +30,15 @@
                         <input id="search-venues" data-bind="textInput: filteredVenue, valueUpdate:'afterkeydown'" type="search" name ="search" class="form-control" placeholder="Search Venues">
                     </div>             
                 </div>
-                <button type="button" class="btn btn-default btn-md search-button"><span class="glyphicon glyphicon-search" aria-hidden="true"></span></button>
+                <button type="button" class="btn btn-default btn-md">
+                    <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+                </button>
             </form>
+            <!-- Display List of Venues identified and filter by textInput search -->
+            <div class="venue-list" data-bind="foreach: venues">
+                <button type="button" class="venue-item" 
+                        data-bind="visible:visible, text: venueName"></button>
+            </div>
         </div>
     </header>
 
@@ -55,8 +60,6 @@
     <script async defer
             src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDmIA-jeluyX3ieqh9BQ6yxR6MYqUS-HJU&v=3&callback=initMap">
     </script>
-
-
 
 </body>
 </html>
