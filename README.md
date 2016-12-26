@@ -1,19 +1,19 @@
 # P5_Neighborhood_Map
 Udacity - P5 Neighborhood Map Project
 
-####Demo: 
+#### Demo: 
 https://manoj85.github.io/P5_Neighborhood_Map/ 
 
-##### Notes
+#### Notes
 
 - Display 10 venues (as a list) found from the starting location 
 - Display map markers 
 - Search the venues by using text-box search
 - Display InfoWindow on clicking every marker
 - Graceful error handling (might miss few places, but will do more updates)
-- [TO-DO] No click functionality from the List of Venues
 
-##### References
+
+#### References
 - Knockout Documentation [http://knockoutjs.com/documentation/]
   - http://todomvc.com/examples/knockoutjs/
 - Google Maps API
@@ -33,6 +33,9 @@ https://manoj85.github.io/P5_Neighborhood_Map/
   - http://codepen.io/emgerold/pen/kjivC
   - http://www.geocodezip.com/v3_simpleMap_InfoBoxA.html
 
-
+#### [TO-DO]
+- No click functionality from the List of Venues
+- Implement Grunt/Gulp to make a better build process for extensibility
+- Improve the pagespeed score and other metrics learned from Website Performance Optimization course
 
 
