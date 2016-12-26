@@ -1,13 +1,11 @@
 
 // Global variables
 let map,
+    mapOptions,
     markers = [],
     infowindow,
     bounds;
-
-// Set the initial point for the map
-const start_point = {lat: 40.7413549, lng: -73.9980244};
-const mapErrorMessage = '<h3>Problem retrieving Map Data. Please reload the page to retry!</h3>'
+const start_point = {lat: 40.7413549, lng: -73.9980244};  
 
 
 // Model for the Venue
@@ -107,6 +105,12 @@ var placeModel = {
 var ViewModel = function() {
 
     var self = this;
+    var venues = ko.observableArray(''),
+        selectedVenue = ko.observable(''),
+        venueMarkers = [],
+        totalVenues = 0,
+        searchStr = ko.observable('') // variable used for search/filter functionality
+    ;
 
     const FOURSQUARE_BASE_URL = 'https://api.foursquare.com/v2/venues/search?ll=';
     const FOURSQUARE_CLIENT_ID = "&client_id=EGYSP4IIH5HNYQADAGR1EB5VOLKE41UXIQJDTJRJ0RW4QWQY";
@@ -116,37 +120,27 @@ var ViewModel = function() {
     // variable used to display Application Title
     self.appTitle = ko.observable("Neighborhood Insights");
 
-    let venues = ko.observableArray([]),
-        selectedVenue = ko.observable(''),
-        venueMarkers = [],
-        totalVenues = 0,
-        searchStr = ko.observable('') // variable used for search/filter functionality
-    ;
-
     function createMarker(venue) {
 
         const venue_position = new google.maps.LatLng(venue.location.lat, venue.location.lng);
 
-        let marker = new google.maps.Marker({
+        var marker = new google.maps.Marker({
             map: map,
             position: venue_position,
             title: venue.name,
             animation: google.maps.Animation.DROP,
-            draggable: false,
+            draggable: false
             // icon: defaultIcon,
-            id: venue.id
         });
 
         marker.addListener('click', function() {
             infowindow.open(map, marker);
         });
 
-        venue.marker = marker;
-
     }
 
     // Get the places details using the FourSquare API
-    function getData() {
+    function getData(start_point) {
         "use strict";
         const FS_URL = FOURSQUARE_BASE_URL + start_point.lat + ',' + start_point.lng + FOURSQUARE_CLIENT_ID + FOURSQUARE_SECRET + FOURSQUARE_VERSION;
 
@@ -160,13 +154,13 @@ var ViewModel = function() {
             success: function (data) {
                 console.log(data.response.venues.length);
                 this.venues = data.response.venues;
-                console.log(this.venues);
+                //console.log(this.venues);
 
                 this.totalVenues = this.venues.length;
                 if (this.totalVenues > 0) {
-                    for(let i=0; i < this.totalVenues; i++) {
-                        const venueObj = this.venues[i];
-                        console.log( venueObj );
+                    for(let i=0; i < 10; i++) {
+                        var venueObj = this.venues[i];
+                        // console.log( venueObj );
                         createMarker(venueObj);
                     }
                 } else {
@@ -176,44 +170,48 @@ var ViewModel = function() {
         });
     }
 
-    // This function will be called on successful load of Google Maps API
-    function initMap() {
+    function getVenues(location) {
+        console.log("getVenues");
+        console.log(location);
 
-        console.log("initMap");
-        // Create Map Options
-        const mapOptions = {
-            "center": start_point,
-            zoom: 12,
-            disableDefaultUI: true
-        }
+        this.venues = [];
 
-        if(typeof google === 'undefined') {
-            $("#map-error").html(mapErrorMessage);
-            return;
-        } else {
-            map = new google.maps.Map(document.getElementById('map'), mapOptions);
+        infowindow = new google.maps.InfoWindow({
+            maxWidth: 150,
+            content: ""
+        });
 
-            // Define InfoWindow
-            infowindow = new google.maps.InfoWindow({
-                maxWidth: 150,
-                content: ""
-            });
+        map.addListener("click", function(){
+            infowindow.close(infowindow);
+        });
 
-            // Close infowindow when clicked elsewhere on the map
-            map.addListener("click", function(){
-                infowindow.close(infowindow);
-            });
-
-            // Define bounds
-            bounds = new google.maps.LatLngBounds();
-            map.fitBounds(bounds);
-        }
-
-        // Initialize getData using FourSquare API
-        getData();
+        // Get Nearby venues from this location
+        getData(location);
     }
 
-    initMap();
+    getVenues(start_point);
+}
+
+function initMap() {
+    console.log("initMap");
+
+    const mapErrorMessage = '<h3>Problem retrieving Map Data. Please reload the page to retry!</h3>';
+
+    if(typeof google === 'undefined') {
+        console.log("google undefined");
+        $("#map-error").html(mapErrorMessage);
+        return;
+    } else {
+        console.log("google defined");
+        mapOptions = {
+            'center': start_point,
+            zoom: 17,
+            disableDefaultUI: true
+        };
+
+        map = new google.maps.Map(document.getElementById('map'), mapOptions);
+        $('#map').height($(window).height());
+    }
 }
 
 $(function() {
