@@ -23,7 +23,17 @@
             <span data-bind="text: appTitle"></span>
         </div>
         <div id="app-filter-icon" class="pull-right">
-            <i class="fa fa-lg fa-filter fa-border" aria-hidden="true"></i>
+            <!-- <i class="fa fa-lg fa-filter fa-border" aria-hidden="true"></i> -->
+
+            <form class="form-inline" role="form">
+                <div class="form-group">
+                    <div class="input-group">
+                        <div class="input-group-addon">Search: </div>
+                        <input id="search-venues" data-bind="textInput: filteredVenue, valueUpdate:'afterkeydown'" type="search" name ="search" class="form-control" placeholder="Search Venues">
+                    </div>             
+                </div>
+                <button type="button" class="btn btn-default btn-md search-button"><span class="glyphicon glyphicon-search" aria-hidden="true"></span></button>
+            </form>
         </div>
     </header>
 

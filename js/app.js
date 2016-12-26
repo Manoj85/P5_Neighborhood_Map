@@ -9,7 +9,7 @@ const start_point = {lat: 40.7413549, lng: -73.9980244};
 // Model for the Venue
 let Venue = function(fs_data, fs_id) {
     this.venueID = fs_data.id;
-    this.venueName = fs_data.name;
+    this.venueName = ko.observable(fs_data.name);
     this.venueAddress = fs_data.location.formattedAddress;
     this.marker = {};
     this.lat = fs_data.location.lat;
@@ -49,6 +49,7 @@ var ViewModel = function() {
         totalVenues = 0,
         searchStr = ko.observable('') // variable used for search/filter functionality
         venue_marker_info_content = ''
+        filteredVenue = ko.observable('')
     ;
 
     const FOURSQUARE_BASE_URL = 'https://api.foursquare.com/v2/venues/search?ll=';
@@ -59,16 +60,24 @@ var ViewModel = function() {
     // variable used to display Application Title
     self.appTitle = ko.observable("Neighborhood Insights");
 
-    function setMarkerInfoContent(venue) {
+    function doFilterVenues(venue) {
+        console.log('doFilterVenues');
+        const venueFilterTxt = filteredVenue().toLowerCase();
 
+        venues().forEach(function (vitem) {
+            const vname = vitem.venueName();
+            if ( vname.toLowerCase().search(venueFilterTxt) === -1 ){
+                vitem.marker.setVisible(false);
+            } else {
+                vitem.marker.setVisible(true);
+            }
+        });
     }
 
     function createMarker(venue) {
-
         console.log('createMarker');
 
         const venue_position = new google.maps.LatLng(venue.lat, venue.lng);
-        
         var marker = new google.maps.Marker({
             map: map,
             position: venue_position,
@@ -77,12 +86,11 @@ var ViewModel = function() {
             draggable: false
             // icon: defaultIcon,
         });
-
         
         google.maps.event.addListener(marker, 'click', function() {
             venue_marker_info_content = '<div id="v-info-box">'
                                         + '<div class="v-name">'
-                                        +  venue.venueName
+                                        +  venue.venueName()
                                         + '</div>'
                                         + '<div class="v-address">'
                                         +  venue.venueAddress
@@ -90,8 +98,6 @@ var ViewModel = function() {
                                         + '<div class="v-url">'
                                         + '<a href="' + venue.venueFsUrl + '">' + venue.venueFsUrl + '</a>'
                                         + '</div>'
-
-
             ;
 
             infowindow.setContent(venue_marker_info_content);
@@ -148,6 +154,9 @@ var ViewModel = function() {
         // Get Nearby venues from this location
         getData(location);
     }
+
+    // Call doFilterVenues whenever the venueFiltered changes
+    filteredVenue.subscribe(doFilterVenues);
 
     getVenues(start_point);
 }
