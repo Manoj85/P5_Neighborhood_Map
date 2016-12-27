@@ -32,7 +32,7 @@
                 </div>
                 <!-- Display List of Venues identified and filter by textInput search -->
                 <div class="venue-list" data-bind="foreach: venues">
-                    <p class="venue-item" data-bind="visible:visible, text: venueName"></p>
+                    <p class="venue-item" data-bind="text: venueName, visible:visible, click: $root.showVenue"></p>
                 </div>
             </form>
         </div>

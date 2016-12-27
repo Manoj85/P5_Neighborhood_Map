@@ -151,6 +151,11 @@ var ViewModel = function() {
     // Call doFilterVenues whenever the venueFiltered changes
     filteredVenue.subscribe(doFilterVenues);
 
+    // Trigger this function on clicking a venue from the venue list
+    self.showVenue = function(venue) {
+        google.maps.event.trigger(venue.marker, "click");
+    }
+
     getVenues(start_point);
 }
 
