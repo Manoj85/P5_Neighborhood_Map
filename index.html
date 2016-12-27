@@ -27,18 +27,14 @@
                 <div class="form-group">
                     <div class="input-group">
                         <div class="input-group-addon">Search: </div>
-                        <input id="search-venues" data-bind="textInput: filteredVenue, valueUpdate:'afterkeydown'" type="search" name ="search" class="form-control" placeholder="Search Venues">
+                        <input id="search-venues" data-bind="textInput: filteredVenue, valueUpdate:'afterkeydown'" type="search" name ="search" class="form-control" placeholder="Type to filter venues..">
                     </div>             
                 </div>
-                <button type="button" class="btn btn-default btn-md">
-                    <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
-                </button>
+                <!-- Display List of Venues identified and filter by textInput search -->
+                <div class="venue-list" data-bind="foreach: venues">
+                    <p class="venue-item" data-bind="visible:visible, text: venueName"></p>
+                </div>
             </form>
-            <!-- Display List of Venues identified and filter by textInput search -->
-            <div class="venue-list" data-bind="foreach: venues">
-                <button type="button" class="venue-item" 
-                        data-bind="visible:visible, text: venueName"></button>
-            </div>
         </div>
     </header>
 
