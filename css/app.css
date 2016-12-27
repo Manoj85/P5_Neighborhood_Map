@@ -58,7 +58,7 @@ h1 {
     position: absolute;
     top: 48px;
     left: 82.7%;
-    right: 20px !important;
+    right: 5px !important;
     z-index: 10;
     background-color: #f9f5f5;
     padding: 0 2px;
@@ -70,7 +70,8 @@ p.venue-item {
     width: 100%;
     text-align: left;
     margin: 0 !important;
-    line-height: 30px;
+    line-height: 26px;
+    font-size: 0.85em;
     border-width: 1px;
     border-style: solid;
     border-color: buttonface;
