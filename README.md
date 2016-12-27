@@ -6,12 +6,11 @@ https://manoj85.github.io/P5_Neighborhood_Map/
 
 #### Notes
 
-- Display 10 venues (as a list) found from the starting location 
+- Generate 10 random integers between the range 0 and TOTAL_VENUES found for the starting location
 - Display map markers 
 - Search the venues by using text-box search
 - Display InfoWindow on clicking every marker
 - Graceful error handling (might miss few places, but will do more updates)
-
 
 #### References
 - Knockout Documentation [http://knockoutjs.com/documentation/]
