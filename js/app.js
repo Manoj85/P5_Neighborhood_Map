@@ -4,7 +4,8 @@ let map,
     mapOptions,
     infowindow,
     bounds;
-const start_point = {lat: 40.7413549, lng: -73.9980244};  
+const start_point = {lat: 40.7413549, lng: -73.9980244}; 
+const number_of_markers_to_display = 10;
 
 // Model for the Venue
 let Venue = function(fs_data, fs_id) {
@@ -53,19 +54,32 @@ var ViewModel = function() {
             new google.maps.Point(10, 34),
             new google.maps.Size(21,34));
         return markerIcon;
-    }   
+    } 
 
+    /*
+     * Name: getRandomArbitrary
+     * Details: Generates 10 random numbers (or indexes, in this case)
+     */
+    function getRandomArbitrary(min, max) {
+        return Math.floor(Math.random() * (max - min)) + min;
+    } 
+
+    /*
+     * Name: createInfoWindowContent
+     * Details: Generates the content for each venue's infoWindow
+     */
     function createInfoWindowContent(venue) {
-        venue_marker_info_content = '<div id="v-info-box">'
-                                        + '<div class="v-name">'
-                                        +  venue.venueName()
-                                        + '</div>'
-                                        + '<div class="v-address">'
-                                        +  venue.venueAddress
-                                        + '</div>'
-                                        + '<div class="v-url">'
-                                        + '<a href="' + venue.venueFsUrl + '">' + venue.venueFsUrl + '</a>'
-                                        + '</div>'
+        venue_marker_info_content = '<section id="v-info-box">'
+                                + '<div class="v-name">'
+                                +  venue.venueName()
+                                + '</div>'
+                                + '<div class="v-address">'
+                                +  venue.venueAddress
+                                + '</div>'
+                                + '<div class="v-url">'
+                                + '<a href="' + venue.venueFsUrl + '">' + venue.venueFsUrl + '</a>'
+                                + '</div>'
+                                + '</section>'
             ;
     }
 
@@ -123,8 +137,12 @@ var ViewModel = function() {
             success: function (data) {
                 this.totalVenues = data.response.venues.length;
                 if (this.totalVenues > 0) {
-                    for(let i = 0; i < 10; i++) {
-                        var item = data.response.venues[i];
+
+                    getRandomArbitrary(0, this.totalVenues)
+
+                    for(let i = 0; i < number_of_markers_to_display; i++) {
+                        var index = getRandomArbitrary(0, this.totalVenues);
+                        var item = data.response.venues[index];
                         self.venues.push( new Venue(item) );
                     }
                     self.venues().forEach(function(vitem) {
