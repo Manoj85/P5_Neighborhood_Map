@@ -7,9 +7,13 @@ https://manoj85.github.io/P5_Neighborhood_Map/
 #### Notes
 
 - Generate 10 random integers between the range 0 and TOTAL_VENUES found for the starting location
-- Display map markers 
+- Display Venue 
+  - Markers on map
+  - Names as a list
 - Search the venues by using text-box search
-- Display InfoWindow on clicking every marker
+- Display InfoWindow on 
+  - Clicking on marker on map
+  - Selecting a venue from the list
 - Graceful error handling (might miss few places, but will do more updates)
 
 #### References
@@ -33,7 +37,6 @@ https://manoj85.github.io/P5_Neighborhood_Map/
   - http://www.geocodezip.com/v3_simpleMap_InfoBoxA.html
 
 #### [TO-DO]
-- No click functionality from the List of Venues
 - Implement Grunt/Gulp to make a better build process for extensibility
 - Improve the pagespeed score and other metrics learned from Website Performance Optimization course
 
