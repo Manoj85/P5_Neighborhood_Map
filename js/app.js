@@ -55,14 +55,30 @@ var ViewModel = function() {
         return markerIcon;
     }   
 
+    function createInfoWindowContent(venue) {
+        venue_marker_info_content = '<div id="v-info-box">'
+                                        + '<div class="v-name">'
+                                        +  venue.venueName()
+                                        + '</div>'
+                                        + '<div class="v-address">'
+                                        +  venue.venueAddress
+                                        + '</div>'
+                                        + '<div class="v-url">'
+                                        + '<a href="' + venue.venueFsUrl + '">' + venue.venueFsUrl + '</a>'
+                                        + '</div>'
+            ;
+    }
+
     function doFilterVenues(venue) {
         const venueFilterTxt = filteredVenue().toLowerCase();
+
         self.venues().forEach(function (vitem) {
             const vname = vitem.venueName();
             if ( vname.toLowerCase().search(venueFilterTxt) === -1 ){
                 vitem.visible(false);
                 vitem.marker.setVisible(false);
             } else {
+                infowindow.close(map, vitem.marker);
                 vitem.visible(true);
                 vitem.marker.setVisible(true);
             }
@@ -81,18 +97,7 @@ var ViewModel = function() {
         });
         
         google.maps.event.addListener(marker, 'click', function() {
-            venue_marker_info_content = '<div id="v-info-box">'
-                                        + '<div class="v-name">'
-                                        +  venue.venueName()
-                                        + '</div>'
-                                        + '<div class="v-address">'
-                                        +  venue.venueAddress
-                                        + '</div>'
-                                        + '<div class="v-url">'
-                                        + '<a href="' + venue.venueFsUrl + '">' + venue.venueFsUrl + '</a>'
-                                        + '</div>'
-            ;
-
+            createInfoWindowContent(venue);
             infowindow.setContent(venue_marker_info_content);
             infowindow.open(map, marker);
         });
