@@ -158,22 +158,19 @@ let ViewModel = function() {
 
 function initMap() {
     console.log("initMap");
-    const mapErrorMessage = '<h3>Problem retrieving Map Data. Please reload the page to retry!</h3>';
-    if(typeof google === 'undefined') {
-        console.log("google undefined");
-        $("#map-error").html(mapErrorMessage);
-        return;
-    } else {
-        console.log("google defined");
-        mapOptions = {
-            'center': start_point,
-            zoom: 16,
-            disableDefaultUI: true
-        };
+    mapOptions = {
+        'center': start_point,
+        zoom: 16,
+        disableDefaultUI: true
+    };
 
-        map = new google.maps.Map(document.getElementById('map'), mapOptions);
-        $('#map').height($(window).height());
-    }
+    map = new google.maps.Map(document.getElementById('map'), mapOptions);
+    $('#map').height($(window).height());
+}
+
+function googleError() {
+    const mapErrorMessage = '<h3>Problem retrieving Map Data. Please reload the page to retry!</h3>';
+    $("#map-error").html(mapErrorMessage);
 }
 
 $(function() {
