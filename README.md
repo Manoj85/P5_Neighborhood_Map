@@ -42,7 +42,8 @@ https://manoj85.github.io/P5_Neighborhood_Map/
 - ES6 Template Literals: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals
 - Implement 'stringStartWith' utils function: 
   http://stackoverflow.com/questions/30168480/ko-utils-stringstartswith-not-working
-
+- Make Google Map responsive:
+  http://stackoverflow.com/questions/18444161/google-maps-responsive-resize
 
 #### [TO-DO]
 - Implement Grunt/Gulp to make a better build process for extensibility

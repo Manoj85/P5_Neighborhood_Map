@@ -153,6 +153,8 @@ let ViewModel = function() {
             // icon: defaultIcon,
         });
 
+
+
         marker.setMap(map);
 
         bounds = new google.maps.LatLngBounds();
@@ -205,8 +207,16 @@ let ViewModel = function() {
     function getVenues(location) {
         infowindow = new google.maps.InfoWindow();
 
+        setMapCenter(location);
+
         // Get Nearby venues from this location
         getData(location);
+    }
+
+    function setMapCenter(location) {
+        "use strict";
+        const startLocation = new google.maps.LatLng(location.lat, location.lng);
+        map.setCenter(startLocation);
     }
 
     getVenues(start_point);
@@ -215,13 +225,18 @@ let ViewModel = function() {
 function initMap() {
     console.log("initMap");
     mapOptions = {
-        "center": start_point,
         zoom: 16,
         disableDefaultUI: true
     };
 
     map = new google.maps.Map(document.getElementById("map"), mapOptions);
     $("#map").height($(window).height());
+
+    google.maps.event.addDomListener(window, "resize", function() {
+        const center_point = map.getCenter();
+        google.maps.event.trigger(map, "resize");
+        map.setCenter(center_point);
+    });
 
     ko.applyBindings(new ViewModel());
 }

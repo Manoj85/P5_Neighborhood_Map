@@ -55,15 +55,33 @@ h1 {
 }
 
 .venue-list {
+    display: block;
     position: absolute;
     top: 48px;
-    left: 82.7%;
     right: 5px !important;
     z-index: 10;
     background-color: #f9f5f5;
     padding: 0 2px;
     border: 1px solid #221111;
     line-height: 30px;
+    left: 82.7%;
+}
+
+
+@media only screen and (min-width: 331px) and (max-width: 768px) {
+    .venue-list {
+        top: 85px;
+        left: 0;
+        width: 60%;
+    }
+}
+
+@media only screen and (max-width : 330px) {
+    .venue-list {
+        top: 135px;
+        left: 0;
+        width: 60%;
+    }
 }
 
 p.venue-item {
