@@ -37,7 +37,7 @@
                 <!-- Display List of Venues identified and filter by textInput search -->
                 <div class="venue-list" data-bind="foreach: venues, visible: venues().length > 0">
                     <div id="api-error"></div>
-                    <p class="venue-item" data-bind="text: venueName, visible:visible, click: $root.showVenue"></p>
+                    <p class="venue-item" data-bind="text: venueName, visible:visible, click: $root.showVenueInfo"></p>
                 </div>
             </form>
         </div>

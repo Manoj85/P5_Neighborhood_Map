@@ -19,7 +19,7 @@ let Venue = function(fs_data, fs_id) {
     this.visible = ko.observable(true);
     // this.venueCategoryName = fs_data.categories[0].name;
     // this.venueCategoryShortName = fs_data.categories[0].shortName;
-}
+};
 
 /*
  * Neighborhood Map View Model.
@@ -27,16 +27,16 @@ let Venue = function(fs_data, fs_id) {
 let ViewModel = function() {
 
     const self = this;
-    let venue_marker_info_content = '';
+    let venue_marker_info_content = "";
 
-    const FOURSQUARE_BASE_URL = 'https://api.foursquare.com/v2/venues/search?ll=';
+    const FOURSQUARE_BASE_URL = "https://api.foursquare.com/v2/venues/search?ll=";
     const FOURSQUARE_CLIENT_ID = "&client_id=EGYSP4IIH5HNYQADAGR1EB5VOLKE41UXIQJDTJRJ0RW4QWQY";
     const FOURSQUARE_SECRET = "&client_secret=ZAV2UOVVIBJ5HWV2IZ4CTBP4Z1AFTSL3FKVOEY44VLH1PZZY";
     const FOURSQUARE_VERSION = "&v=20161221&venuePhotos=1";
 
     // variable used to display Application Title
     self.venues = ko.observableArray([]);
-    self.filteredVenue = ko.observable('');
+    self.filteredVenue = ko.observable("");
     self.totalVenues = 0;
 
     /*
@@ -61,6 +61,34 @@ let ViewModel = function() {
         `;
     }
 
+    /*
+     * Name: setAnimateMarker
+     * Details: Animates the marker on the map
+     */
+    function setAnimateMarker(vmarker) {
+        "use strict";
+
+        // Check if the selected marker has animation already
+        if (vmarker.getAnimation() === null) {
+            self.venues().forEach(function(venue) {
+                venue.marker.setAnimation(null);
+            });
+            vmarker.setAnimation(google.maps.Animation.BOUNCE);
+        }
+    }
+
+    /*
+     * Name: showVenueInfo
+     * Details: Takes care of opening info windows and bouncing markers
+     */
+    self.showVenueInfo = function(venue) {
+        "use strict";
+        setAnimateMarker(venue.marker);
+        createInfoWindowContent(venue);
+        infowindow.setContent(venue_marker_info_content);
+        infowindow.open(map, venue.marker);
+    };
+
     function doFilterVenues(venue) {
         const venueFilterTxt = filteredVenue().toLowerCase();
 
@@ -77,6 +105,10 @@ let ViewModel = function() {
         });
     }
 
+    /*
+     * Name: createMarker
+     * Details: Create marker for each of the venues
+     */
     function createMarker(venue) {
         const venue_position = new google.maps.LatLng(venue.lat, venue.lng);
         let marker = new google.maps.Marker({
@@ -87,12 +119,6 @@ let ViewModel = function() {
             draggable: false
             // icon: defaultIcon,
         });
-        
-        google.maps.event.addListener(marker, 'click', function() {
-            createInfoWindowContent(venue);
-            infowindow.setContent(venue_marker_info_content);
-            infowindow.open(map, marker);
-        });
 
         marker.setMap(map);
 
@@ -101,13 +127,17 @@ let ViewModel = function() {
 
         //map.fitBounds(bounds);
         venue.marker = marker;
+
+        google.maps.event.addListener(venue.marker, "click", function () {
+            self.showVenueInfo(venue);
+        });
     }
 
     // Get the places details using the FourSquare API
     function getData(start_point) {
         "use strict";
-        const FS_URL = FOURSQUARE_BASE_URL + start_point.lat + ',' + start_point.lng + FOURSQUARE_CLIENT_ID + FOURSQUARE_SECRET + FOURSQUARE_VERSION;
-        const FS_ERROR_MESSAGE = '<h3>Problem retrieving FourSquare API Data. Please reload the page to retry!</h3>';
+        const FS_URL = FOURSQUARE_BASE_URL + start_point.lat + "," + start_point.lng + FOURSQUARE_CLIENT_ID + FOURSQUARE_SECRET + FOURSQUARE_VERSION;
+        const FS_ERROR_MESSAGE = `<h3>Problem retrieving FourSquare API Data. Please reload the page to retry!</h3>`;
 
         $.ajax({
             type: "GET",
@@ -115,13 +145,13 @@ let ViewModel = function() {
             dataType: "JSONP",
             cache: false,
             success: function (data) {
-                $('#api-error').html('');
+                $("#api-error").html("");
                 self.totalVenues = data.response.venues.length;
                 if (self.totalVenues > 0) {
 
                     getRandomArbitrary(0, self.totalVenues)
 
-                    for(let i = 0; i < number_of_markers_to_display; i++) {
+                    for (let i = 0; i < number_of_markers_to_display; i++) {
                         const index = getRandomArbitrary(0, self.totalVenues);
                         const item = data.response.venues[index];
                         self.venues.push( new Venue(item) );
@@ -134,13 +164,14 @@ let ViewModel = function() {
                 }
             },
             error: function(data) {
-                $('#api-error').html(FS_ERROR_MESSAGE);
+                $("#api-error").html(FS_ERROR_MESSAGE);
             }
         });
     }
 
     function getVenues(location) {
         infowindow = new google.maps.InfoWindow();
+
         // Get Nearby venues from this location
         getData(location);
     }
@@ -148,32 +179,24 @@ let ViewModel = function() {
     // Call doFilterVenues whenever the venueFiltered changes
     self.filteredVenue.subscribe(doFilterVenues);
 
-    // Trigger this function on clicking a venue from the venue list
-    self.showVenue = function(venue) {
-        google.maps.event.trigger(venue.marker, "click");
-    }
-
     getVenues(start_point);
 }
 
 function initMap() {
     console.log("initMap");
     mapOptions = {
-        'center': start_point,
+        "center": start_point,
         zoom: 16,
         disableDefaultUI: true
     };
 
-    map = new google.maps.Map(document.getElementById('map'), mapOptions);
-    $('#map').height($(window).height());
+    map = new google.maps.Map(document.getElementById("map"), mapOptions);
+    $("#map").height($(window).height());
+
+    ko.applyBindings(new ViewModel());
 }
 
 function googleError() {
-    const mapErrorMessage = '<h3>Problem retrieving Map Data. Please reload the page to retry!</h3>';
+    const mapErrorMessage = `<h3>Problem retrieving Map Data. Please reload the page to retry!</h3>`;
     $("#map-error").html(mapErrorMessage);
 }
-
-$(function() {
-    ko.applyBindings(new ViewModel());
-});
-
