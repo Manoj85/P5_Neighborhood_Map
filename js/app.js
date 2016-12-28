@@ -107,12 +107,15 @@ let ViewModel = function() {
     function getData(start_point) {
         "use strict";
         const FS_URL = FOURSQUARE_BASE_URL + start_point.lat + ',' + start_point.lng + FOURSQUARE_CLIENT_ID + FOURSQUARE_SECRET + FOURSQUARE_VERSION;
+        const FS_ERROR_MESSAGE = '<h3>Problem retrieving FourSquare API Data. Please reload the page to retry!</h3>';
+
         $.ajax({
             type: "GET",
             url: FS_URL,
             dataType: "JSONP",
             cache: false,
             success: function (data) {
+                $('#api-error').html('');
                 self.totalVenues = data.response.venues.length;
                 if (self.totalVenues > 0) {
 
@@ -129,6 +132,9 @@ let ViewModel = function() {
                 } else {
                     alert("No venues found for this location!!");
                 }
+            },
+            error: function(data) {
+                $('#api-error').html(FS_ERROR_MESSAGE);
             }
         });
     }
