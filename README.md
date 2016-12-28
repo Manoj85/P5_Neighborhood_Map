@@ -7,14 +7,10 @@ https://manoj85.github.io/P5_Neighborhood_Map/
 #### Notes
 
 - Generate 10 random integers between the range 0 and TOTAL_VENUES found for the starting location
-- Display Venue 
-  - Markers on map
-  - Names as a list
-- Search the venues by using text-box search
-- Display InfoWindow on 
-  - Clicking on marker on map
-  - Selecting a venue from the list
-- Graceful error handling (might miss few places, but will do more updates)
+- Map displays all location markers by default, and displays the filtered subset of location markers when a filter is applied.
+- Clicking a marker displays unique information about a location in either an infoWindow or DOM element
+- Markers will animate when clicked (e.g. bouncing, color change.)
+- Graceful error handling (For Google Maps API and Foursquare API)
 
 #### References
 - Knockout Documentation [http://knockoutjs.com/documentation/]
@@ -35,6 +31,13 @@ https://manoj85.github.io/P5_Neighborhood_Map/
   - http://stackoverflow.com/questions/15165007/google-maps-custom-infobox
   - http://codepen.io/emgerold/pen/kjivC
   - http://www.geocodezip.com/v3_simpleMap_InfoBoxA.html
+- StyleLint: http://stylelint.io/user-guide
+- http://stackoverflow.com/questions/13168572/call-to-jquery-ajax-fail-vs-error
+- http://api.jquery.com/deferred.fail/
+- ES6 Template Literals: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals
+- Implement 'stringStartWith' utils function: 
+  http://stackoverflow.com/questions/30168480/ko-utils-stringstartswith-not-working
+
 
 #### [TO-DO]
 - Implement Grunt/Gulp to make a better build process for extensibility

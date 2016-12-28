@@ -36,7 +36,7 @@ let ViewModel = function() {
 
     // variable used to display Application Title
     self.venues = ko.observableArray([]);
-    self.filteredVenue = ko.observable("");
+    self.venueFilterTxt = ko.observable("");
     self.totalVenues = 0;
 
     /*
@@ -45,7 +45,19 @@ let ViewModel = function() {
      */
     function getRandomArbitrary(min, max) {
         return Math.floor(Math.random() * (max - min)) + min;
-    } 
+    }
+
+    /*
+     * Name: stringStartsWith
+     * Details: Generates 10 random numbers (or indexes, in this case)
+     */
+    let stringStartsWith = function (string, startsWith) {
+        string = string || "";
+        if (startsWith.length > string.length) {
+            return false;
+        }
+        return string.substring(0, startsWith.length) === startsWith;
+    };
 
     /*
      * Name: createInfoWindowContent
@@ -89,21 +101,42 @@ let ViewModel = function() {
         infowindow.open(map, venue.marker);
     };
 
-    function doFilterVenues(venue) {
-        const venueFilterTxt = filteredVenue().toLowerCase();
+    self.filteredVenuesList = ko.dependentObservable(function(){
+        const filter = self.venueFilterTxt().toLowerCase();
 
-        self.venues().forEach(function (vitem) {
-            const vname = vitem.venueName();
-            if ( vname.toLowerCase().search(venueFilterTxt) === -1 ){
-                vitem.visible(false);
-                vitem.marker.setVisible(false);
-            } else {
-                infowindow.close(map, vitem.marker);
-                vitem.visible(true);
-                vitem.marker.setVisible(true);
-            }
-        });
-    }
+        if (!filter || filter.trim() === "") {
+            // Return the original array;
+            return ko.utils.arrayFilter(self.venues(), function(item) {
+                item.visible(true);
+                item.marker.visible = true;
+                return true;
+            });
+        } else {
+            return ko.utils.arrayFilter(self.venues(), function(item) {
+                if (item.venueName().toLowerCase().indexOf(filter) >= 0) {
+                    return true;
+                } else {
+                    item.visible(false);
+                    item.marker.setVisible(false);
+                    return false;
+                }
+            });
+            /*
+            return ko.utils.arrayFilter(self.venues(), function(item) {
+                const result = stringStartsWith(item.venueName().toLowerCase(), filter);
+                if(!result) {
+                    item.visible(false);
+                    item.marker.setVisible(false);
+                } else {
+                    infowindow.close(map, item.marker);
+                    item.visible(true);
+                    item.marker.setVisible(true);
+                }
+                return result;
+            });
+            */
+        }
+    }, this);
 
     /*
      * Name: createMarker
@@ -175,9 +208,6 @@ let ViewModel = function() {
         // Get Nearby venues from this location
         getData(location);
     }
-
-    // Call doFilterVenues whenever the venueFiltered changes
-    self.filteredVenue.subscribe(doFilterVenues);
 
     getVenues(start_point);
 }

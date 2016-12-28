@@ -31,11 +31,11 @@
                 <div class="form-group">
                     <div class="input-group">
                         <div class="input-group-addon">Search: </div>
-                        <input id="search-venues" data-bind="textInput: filteredVenue, valueUpdate:'afterkeydown'" type="search" name ="search" class="form-control" placeholder="Type to filter venues..">
+                        <input id="search-venues" data-bind="textInput: venueFilterTxt" type="search" name ="search" class="form-control" placeholder="Type to filter venues..">
                     </div>             
                 </div>
                 <!-- Display List of Venues identified and filter by textInput search -->
-                <div class="venue-list" data-bind="foreach: venues, visible: venues().length > 0">
+                <div class="venue-list" data-bind="foreach: filteredVenuesList, visible: filteredVenuesList().length > 0">
                     <div id="api-error"></div>
                     <p class="venue-item" data-bind="text: venueName, visible:visible, click: $root.showVenueInfo"></p>
                 </div>
