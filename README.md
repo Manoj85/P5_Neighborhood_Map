@@ -44,6 +44,8 @@ https://manoj85.github.io/P5_Neighborhood_Map/
   http://stackoverflow.com/questions/30168480/ko-utils-stringstartswith-not-working
 - Make Google Map responsive:
   http://stackoverflow.com/questions/18444161/google-maps-responsive-resize
+- Unique random number generation: 
+  http://stackoverflow.com/questions/15584716/unique-random-number-generator-javascript
 
 #### [TO-DO]
 - Implement Grunt/Gulp to make a better build process for extensibility

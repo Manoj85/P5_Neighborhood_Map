@@ -183,14 +183,25 @@ let ViewModel = function() {
                 $("#api-error").html("");
                 self.totalVenues = data.response.venues.length;
                 if (self.totalVenues > 0) {
+                    let randomIndexArr = [];
+                    for (let i = 0, count = 0; i < count, count < number_of_markers_to_display; i++) {
+                        let index;
+                        do {
+                            index = getRandomArbitrary(0, self.totalVenues);
+                        }
+                        while(randomIndexArr.indexOf(index) !== -1) {
+                            randomIndexArr.push(index);
+                            count++;
+                        }
+                    }
 
-                    getRandomArbitrary(0, self.totalVenues)
-
-                    for (let i = 0; i < number_of_markers_to_display; i++) {
-                        const index = getRandomArbitrary(0, self.totalVenues);
+                    const randomIndexArrLength = randomIndexArr.length;
+                    for (let j = 0; randomIndexArrLength > 0, j < randomIndexArrLength; j++) {
+                        let index = randomIndexArr[j];
                         const item = data.response.venues[index];
                         self.venues.push( new Venue(item) );
                     }
+
                     self.venues().forEach(function(vitem) {
                         createMarker(vitem);
                     });
