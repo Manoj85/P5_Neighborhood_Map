@@ -56,7 +56,7 @@ let ViewModel = function() {
             <section id="v-info-box">
                 <div class="v-name">${venue.venueName()}</div>
                 <div class="v-address">${venue.venueAddress}</div>
-                <div class="v-url"><a href="${venue.venueFsUrl}">${venue.venueFsUrl}</a></div>
+                <div class="v-url"><a href="${venue.venueFsUrl}" target="_blank">${venue.venueFsUrl}</a></div>
             </section>
         `;
     }
