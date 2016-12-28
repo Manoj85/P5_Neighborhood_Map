@@ -4,6 +4,11 @@ Udacity - P5 Neighborhood Map Project
 #### Demo: 
 https://manoj85.github.io/P5_Neighborhood_Map/ 
 
+#### Instruction to run the app locally: 
+- Download the source code from my repo at GitHub: 
+  https://github.com/Manoj85/P5_Neighborhood_Map.git
+- Open /index.html in your browser.
+
 #### Notes
 
 - Generate 10 random integers between the range 0 and TOTAL_VENUES found for the starting location
