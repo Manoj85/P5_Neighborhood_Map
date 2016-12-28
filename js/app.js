@@ -52,18 +52,13 @@ let ViewModel = function() {
      * Details: Generates the content for each venue's infoWindow
      */
     function createInfoWindowContent(venue) {
-        venue_marker_info_content = '<section id="v-info-box">'
-                                + '<div class="v-name">'
-                                +  venue.venueName()
-                                + '</div>'
-                                + '<div class="v-address">'
-                                +  venue.venueAddress
-                                + '</div>'
-                                + '<div class="v-url">'
-                                + '<a href="' + venue.venueFsUrl + '">' + venue.venueFsUrl + '</a>'
-                                + '</div>'
-                                + '</section>'
-            ;
+        venue_marker_info_content = `
+            <section id="v-info-box">
+                <div class="v-name">${venue.venueName()}</div>
+                <div class="v-address">${venue.venueAddress}</div>
+                <div class="v-url"><a href="${venue.venueFsUrl}">${venue.venueFsUrl}</a></div>
+            </section>
+        `;
     }
 
     function doFilterVenues(venue) {
