@@ -72,9 +72,7 @@ p.venue-item {
     margin: 0 !important;
     line-height: 26px;
     font-size: 0.85em;
-    border-width: 1px;
-    border-style: solid;
-    border-color: buttonface;
+    border: 1px solid buttonface;
     border-image: initial;
 }
 p.venue-item:hover{
@@ -97,7 +95,7 @@ p.venue-item:hover{
 .v-address {
     color: #999;
     font-size: 11px;
-    font-family: 'Arial';
+    font-family: 'Trebuchet MS', Arial, Helvetica, sans-serif;
 }
 
 .v-url {
