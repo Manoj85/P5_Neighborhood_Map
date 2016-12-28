@@ -24,15 +24,10 @@ let Venue = function(fs_data, fs_id) {
 /*
  * Neighborhood Map View Model.
  */
-var ViewModel = function() {
+let ViewModel = function() {
 
-    var self = this;
-    var selectedVenue = ko.observable(''),
-        venueMarkers = [],
-        totalVenues = 0,
-        venue_marker_info_content = ''
-        filteredVenue = ko.observable('')
-    ;
+    const self = this;
+    let venue_marker_info_content = '';
 
     const FOURSQUARE_BASE_URL = 'https://api.foursquare.com/v2/venues/search?ll=';
     const FOURSQUARE_CLIENT_ID = "&client_id=EGYSP4IIH5HNYQADAGR1EB5VOLKE41UXIQJDTJRJ0RW4QWQY";
@@ -40,8 +35,9 @@ var ViewModel = function() {
     const FOURSQUARE_VERSION = "&v=20161221&venuePhotos=1";
 
     // variable used to display Application Title
-    self.appTitle = ko.observable("Neighborhood Insights");
     self.venues = ko.observableArray([]);
+    self.filteredVenue = ko.observable('');
+    self.totalVenues = 0;
 
     /*
      * Name: getRandomArbitrary
@@ -88,7 +84,7 @@ var ViewModel = function() {
 
     function createMarker(venue) {
         const venue_position = new google.maps.LatLng(venue.lat, venue.lng);
-        var marker = new google.maps.Marker({
+        let marker = new google.maps.Marker({
             map: map,
             position: venue_position,
             title: venue.name,
@@ -122,14 +118,14 @@ var ViewModel = function() {
             dataType: "JSONP",
             cache: false,
             success: function (data) {
-                this.totalVenues = data.response.venues.length;
-                if (this.totalVenues > 0) {
+                self.totalVenues = data.response.venues.length;
+                if (self.totalVenues > 0) {
 
-                    getRandomArbitrary(0, this.totalVenues)
+                    getRandomArbitrary(0, self.totalVenues)
 
                     for(let i = 0; i < number_of_markers_to_display; i++) {
-                        var index = getRandomArbitrary(0, this.totalVenues);
-                        var item = data.response.venues[index];
+                        const index = getRandomArbitrary(0, self.totalVenues);
+                        const item = data.response.venues[index];
                         self.venues.push( new Venue(item) );
                     }
                     self.venues().forEach(function(vitem) {
@@ -149,7 +145,7 @@ var ViewModel = function() {
     }
 
     // Call doFilterVenues whenever the venueFiltered changes
-    filteredVenue.subscribe(doFilterVenues);
+    self.filteredVenue.subscribe(doFilterVenues);
 
     // Trigger this function on clicking a venue from the venue list
     self.showVenue = function(venue) {
