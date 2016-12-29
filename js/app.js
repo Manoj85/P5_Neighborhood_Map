@@ -8,14 +8,14 @@ const start_point = {lat: 40.7413549, lng: -73.9980244};
 const number_of_markers_to_display = 10;
 
 // Model for the Venue
-let Venue = function(fs_data, fs_id) {
+let Venue = function(fs_data) {
     this.venueID = fs_data.id;
     this.venueName = ko.observable(fs_data.name);
     this.venueAddress = fs_data.location.formattedAddress;
     this.marker = {};
     this.lat = fs_data.location.lat;
     this.lng = fs_data.location.lng;
-    this.venueFsUrl = "https://foursquare.com/v/" + this.venueID;
+    this.venueFsUrl = 'https://foursquare.com/v/' + this.venueID;
     this.visible = ko.observable(true);
     // this.venueCategoryName = fs_data.categories[0].name;
     // this.venueCategoryShortName = fs_data.categories[0].shortName;
@@ -27,16 +27,16 @@ let Venue = function(fs_data, fs_id) {
 let ViewModel = function() {
 
     const self = this;
-    let venue_marker_info_content = "";
+    let venue_marker_info_content = '';
 
-    const FOURSQUARE_BASE_URL = "https://api.foursquare.com/v2/venues/search?ll=";
-    const FOURSQUARE_CLIENT_ID = "&client_id=EGYSP4IIH5HNYQADAGR1EB5VOLKE41UXIQJDTJRJ0RW4QWQY";
-    const FOURSQUARE_SECRET = "&client_secret=ZAV2UOVVIBJ5HWV2IZ4CTBP4Z1AFTSL3FKVOEY44VLH1PZZY";
-    const FOURSQUARE_VERSION = "&v=20161221&venuePhotos=1";
+    const FOURSQUARE_BASE_URL = 'https://api.foursquare.com/v2/venues/search?ll=';
+    const FOURSQUARE_CLIENT_ID = '&client_id=EGYSP4IIH5HNYQADAGR1EB5VOLKE41UXIQJDTJRJ0RW4QWQY';
+    const FOURSQUARE_SECRET = '&client_secret=ZAV2UOVVIBJ5HWV2IZ4CTBP4Z1AFTSL3FKVOEY44VLH1PZZY';
+    const FOURSQUARE_VERSION = '&v=20161221&venuePhotos=1';
 
     // variable used to display Application Title
     self.venues = ko.observableArray([]);
-    self.venueFilterTxt = ko.observable("");
+    self.venueFilterTxt = ko.observable('');
     self.totalVenues = 0;
 
     /*
@@ -52,7 +52,7 @@ let ViewModel = function() {
      * Details: Generates 10 random numbers (or indexes, in this case)
      */
     let stringStartsWith = function (string, startsWith) {
-        string = string || "";
+        string = string || '';
         if (startsWith.length > string.length) {
             return false;
         }
@@ -78,7 +78,7 @@ let ViewModel = function() {
      * Details: Animates the marker on the map
      */
     function setAnimateMarker(vmarker) {
-        "use strict";
+        'use strict';
 
         // Check if the selected marker has animation already
         if (vmarker.getAnimation() === null) {
@@ -94,7 +94,7 @@ let ViewModel = function() {
      * Details: Takes care of opening info windows and bouncing markers
      */
     self.showVenueInfo = function(venue) {
-        "use strict";
+        'use strict';
         setAnimateMarker(venue.marker);
         createInfoWindowContent(venue);
         infowindow.setContent(venue_marker_info_content);
@@ -104,7 +104,7 @@ let ViewModel = function() {
     self.filteredVenuesList = ko.dependentObservable(function(){
         const filter = self.venueFilterTxt().toLowerCase();
 
-        if (!filter || filter.trim() === "") {
+        if (!filter || filter.trim() === '') {
             // Return the original array;
             return ko.utils.arrayFilter(self.venues(), function(item) {
                 item.visible(true);
@@ -163,24 +163,24 @@ let ViewModel = function() {
         //map.fitBounds(bounds);
         venue.marker = marker;
 
-        google.maps.event.addListener(venue.marker, "click", function () {
+        google.maps.event.addListener(venue.marker, 'click', function () {
             self.showVenueInfo(venue);
         });
     }
 
     // Get the places details using the FourSquare API
     function getData(start_point) {
-        "use strict";
-        const FS_URL = FOURSQUARE_BASE_URL + start_point.lat + "," + start_point.lng + FOURSQUARE_CLIENT_ID + FOURSQUARE_SECRET + FOURSQUARE_VERSION;
+        'use strict';
+        const FS_URL = FOURSQUARE_BASE_URL + start_point.lat + ',' + start_point.lng + FOURSQUARE_CLIENT_ID + FOURSQUARE_SECRET + FOURSQUARE_VERSION;
         const FS_ERROR_MESSAGE = `<h3>Problem retrieving FourSquare API Data. Please reload the page to retry!</h3>`;
 
         $.ajax({
-            type: "GET",
+            type: 'GET',
             url: FS_URL,
-            dataType: "JSONP",
+            dataType: 'JSONP',
             cache: false,
             success: function (data) {
-                $("#api-error").html("");
+                $('#api-error').html('');
                 self.totalVenues = data.response.venues.length;
                 if (self.totalVenues > 0) {
                     let randomIndexArr = [];
@@ -206,11 +206,11 @@ let ViewModel = function() {
                         createMarker(vitem);
                     });
                 } else {
-                    alert("No venues found for this location!!");
+                    alert('No venues found for this location!!');
                 }
             },
             error: function(data) {
-                $("#api-error").html(FS_ERROR_MESSAGE);
+                $('#api-error').html(FS_ERROR_MESSAGE);
             }
         });
     }
@@ -225,7 +225,7 @@ let ViewModel = function() {
     }
 
     function setMapCenter(location) {
-        "use strict";
+        'use strict';
         const startLocation = new google.maps.LatLng(location.lat, location.lng);
         map.setCenter(startLocation);
     }
@@ -234,18 +234,18 @@ let ViewModel = function() {
 }
 
 function initMap() {
-    console.log("initMap");
+    console.log('initMap');
     mapOptions = {
         zoom: 16,
         disableDefaultUI: true
     };
 
-    map = new google.maps.Map(document.getElementById("map"), mapOptions);
-    $("#map").height($(window).height());
+    map = new google.maps.Map(document.getElementById('map'), mapOptions);
+    $('#map').height($(window).height());
 
-    google.maps.event.addDomListener(window, "resize", function() {
+    google.maps.event.addDomListener(window, 'resize', function() {
         const center_point = map.getCenter();
-        google.maps.event.trigger(map, "resize");
+        google.maps.event.trigger(map, 'resize');
         map.setCenter(center_point);
     });
 
@@ -254,5 +254,5 @@ function initMap() {
 
 function googleError() {
     const mapErrorMessage = `<h3>Problem retrieving Map Data. Please reload the page to retry!</h3>`;
-    $("#map-error").html(mapErrorMessage);
+    $('#map-error').html(mapErrorMessage);
 }
