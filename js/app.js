@@ -12,7 +12,7 @@ let Venue = function(fs_data) {
     this.venueID = fs_data.id;
     this.venueName = ko.observable(fs_data.name);
     this.venueAddress = fs_data.location.formattedAddress;
-    this.marker = {};
+    this.marker = null;
     this.lat = fs_data.location.lat;
     this.lng = fs_data.location.lng;
     this.venueFsUrl = 'https://foursquare.com/v/' + this.venueID;
@@ -89,19 +89,20 @@ let ViewModel = function() {
         infowindow.open(map, venue.marker);
     };
 
-    self.filteredVenuesList = ko.dependentObservable(function(){
+    self.filteredVenuesList = ko.computed(function(){
         const filter = self.venueFilterTxt().toLowerCase();
 
         if (!filter || filter.trim() === '') {
             // Return the original array;
             return ko.utils.arrayFilter(self.venues(), function(item) {
                 item.visible(true);
-                item.marker.visible = true;
+                item.marker && item.marker.setVisible(true);
                 return true;
             });
         } else {
             return ko.utils.arrayFilter(self.venues(), function(item) {
                 if (item.venueName().toLowerCase().indexOf(filter) >= 0) {
+                    item.marker.setVisible(true);
                     return true;
                 } else {
                     item.visible(false);
@@ -109,20 +110,6 @@ let ViewModel = function() {
                     return false;
                 }
             });
-            /*
-            return ko.utils.arrayFilter(self.venues(), function(item) {
-                const result = stringStartsWith(item.venueName().toLowerCase(), filter);
-                if(!result) {
-                    item.visible(false);
-                    item.marker.setVisible(false);
-                } else {
-                    infowindow.close(map, item.marker);
-                    item.visible(true);
-                    item.marker.setVisible(true);
-                }
-                return result;
-            });
-            */
         }
     }, this);
 
