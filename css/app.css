@@ -17,12 +17,16 @@ body {
 }
 
 header {
-    background: #4633ea; /* #985f0d; */
+    background: #4a4579;
     margin-right: 50px;
     position: fixed;
     z-index: 50;
     width: 100%;
     line-height: 50px;
+}
+
+main {
+    display: block;
 }
 
 h1 {

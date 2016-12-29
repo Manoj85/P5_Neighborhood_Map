@@ -46,7 +46,9 @@ https://manoj85.github.io/P5_Neighborhood_Map/
   http://stackoverflow.com/questions/18444161/google-maps-responsive-resize
 - Unique random number generation: 
   http://stackoverflow.com/questions/15584716/unique-random-number-generator-javascript
-
+- Semantic HTML Usage:
+  http://stackoverflow.com/questions/32835746/html-5-section-and-main-semantic-tags-use
+  
 #### [TO-DO]
 - Implement Grunt/Gulp to make a better build process for extensibility
 - Improve the pagespeed score and other metrics learned from Website Performance Optimization course
