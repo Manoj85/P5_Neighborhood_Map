@@ -128,14 +128,11 @@ let ViewModel = function() {
             // icon: defaultIcon,
         });
 
-
-
         marker.setMap(map);
 
-        bounds = new google.maps.LatLngBounds();
         bounds.extend(marker.position);
 
-        //map.fitBounds(bounds);
+        map.fitBounds(bounds);
         venue.marker = marker;
 
         google.maps.event.addListener(venue.marker, 'click', function () {
@@ -180,6 +177,7 @@ let ViewModel = function() {
                     self.venues().forEach(function(vitem) {
                         createMarker(vitem);
                     });
+
                 } else {
                     alert('No venues found for this location!!');
                 }
@@ -192,6 +190,7 @@ let ViewModel = function() {
 
     function getVenues(location) {
         infowindow = new google.maps.InfoWindow();
+        bounds = new google.maps.LatLngBounds();
 
         setMapCenter(location);
 
@@ -203,6 +202,7 @@ let ViewModel = function() {
         'use strict';
         const startLocation = new google.maps.LatLng(location.lat, location.lng);
         map.setCenter(startLocation);
+        map.fitBounds(bounds);
     }
 
     getVenues(start_point);
@@ -222,6 +222,7 @@ function initMap() {
         const center_point = map.getCenter();
         google.maps.event.trigger(map, 'resize');
         map.setCenter(center_point);
+        map.fitBounds(bounds);
     });
 
     ko.applyBindings(new ViewModel());
