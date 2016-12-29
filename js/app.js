@@ -48,18 +48,6 @@ let ViewModel = function() {
     }
 
     /*
-     * Name: stringStartsWith
-     * Details: Generates 10 random numbers (or indexes, in this case)
-     */
-    let stringStartsWith = function (string, startsWith) {
-        string = string || '';
-        if (startsWith.length > string.length) {
-            return false;
-        }
-        return string.substring(0, startsWith.length) === startsWith;
-    };
-
-    /*
      * Name: createInfoWindowContent
      * Details: Generates the content for each venue's infoWindow
      */
