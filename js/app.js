@@ -3,7 +3,8 @@
 let map,
     mapOptions,
     infowindow,
-    bounds;
+    bounds,
+    vm;
 const start_point = {lat: 40.7413549, lng: -73.9980244}; 
 const number_of_markers_to_display = 10;
 
@@ -26,18 +27,19 @@ let Venue = function(fs_data) {
  */
 let ViewModel = function() {
 
-    const self = this;
+    let self = this;
     let venue_marker_info_content = '';
 
-    const FOURSQUARE_BASE_URL = 'https://api.foursquare.com/v2/venues/search?ll=';
+    const FOURSQUARE_BASE_URL = 'https://api.foursquaress.com/v2/venues/search?ll=';
     const FOURSQUARE_CLIENT_ID = '&client_id=EGYSP4IIH5HNYQADAGR1EB5VOLKE41UXIQJDTJRJ0RW4QWQY';
     const FOURSQUARE_SECRET = '&client_secret=ZAV2UOVVIBJ5HWV2IZ4CTBP4Z1AFTSL3FKVOEY44VLH1PZZY';
     const FOURSQUARE_VERSION = '&v=20161221&venuePhotos=1';
 
-    // variable used to display Application Title
     self.venues = ko.observableArray([]);
     self.venueFilterTxt = ko.observable('');
     self.totalVenues = 0;
+    self.apiErrorMessage = ko.observable();
+    self.mapErrorMessage = ko.observable();
 
     /*
      * Name: getRandomArbitrary
@@ -152,7 +154,10 @@ let ViewModel = function() {
             dataType: 'JSONP',
             cache: false,
             success: function (data) {
-                $('#api-error').html('');
+                // self.apiErrorMessage = ko.observable('');
+                document.getElementById('api-error').style.display = 'none';
+                document.getElementById('api-error').innerHTML = '';
+
                 self.totalVenues = data.response.venues.length;
                 if (self.totalVenues > 0) {
                     let randomIndexArr = [];
@@ -183,7 +188,10 @@ let ViewModel = function() {
                 }
             },
             error: function(data) {
-                $('#api-error').html(FS_ERROR_MESSAGE);
+                console.log('error');
+                // self.apiErrorMessage = ko.observable(FS_ERROR_MESSAGE);
+                document.getElementById('api-error').style.display = 'block';
+                document.getElementById('api-error').innerHTML = FS_ERROR_MESSAGE;
             }
         });
     }
@@ -208,6 +216,13 @@ let ViewModel = function() {
     getVenues(start_point);
 }
 
+function googleError() {
+    const MAP_ERROR_MESSAGE = `<h3>Problem retrieving Map Data. Please reload the page to retry!</h3>`;
+    // vm.mapErrorMessage(MAP_ERROR_MESSAGE);
+    document.getElementById('map-error').style.display = 'block';
+    document.getElementById('map-error').innerHTML = MAP_ERROR_MESSAGE;
+}
+
 function initMap() {
     console.log('initMap');
     mapOptions = {
@@ -225,10 +240,12 @@ function initMap() {
         map.fitBounds(bounds);
     });
 
-    ko.applyBindings(new ViewModel());
+    document.getElementById('map-error').style.display = 'none';
+    document.getElementById('map-error').innerHTML = '';
+
+    vm = new ViewModel();
+    ko.applyBindings(vm);
 }
 
-function googleError() {
-    const mapErrorMessage = `<h3>Problem retrieving Map Data. Please reload the page to retry!</h3>`;
-    $('#map-error').html(mapErrorMessage);
-}
+
+
