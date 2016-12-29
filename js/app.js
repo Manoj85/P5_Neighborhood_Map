@@ -30,7 +30,7 @@ let ViewModel = function() {
     let self = this;
     let venue_marker_info_content = '';
 
-    const FOURSQUARE_BASE_URL = 'https://api.foursquaress.com/v2/venues/search?ll=';
+    const FOURSQUARE_BASE_URL = 'https://api.foursquare.com/v2/venues/search?ll=';
     const FOURSQUARE_CLIENT_ID = '&client_id=EGYSP4IIH5HNYQADAGR1EB5VOLKE41UXIQJDTJRJ0RW4QWQY';
     const FOURSQUARE_SECRET = '&client_secret=ZAV2UOVVIBJ5HWV2IZ4CTBP4Z1AFTSL3FKVOEY44VLH1PZZY';
     const FOURSQUARE_VERSION = '&v=20161221&venuePhotos=1';
@@ -131,9 +131,7 @@ let ViewModel = function() {
         });
 
         marker.setMap(map);
-
         bounds.extend(marker.position);
-
         map.fitBounds(bounds);
         venue.marker = marker;
 
